@@ -18,6 +18,7 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
     public Card Card => _card;
     public PoolType PoolType { get; }
     public GameObject PoolObj => gameObject;
+    public Action<float> DamageCallBack { get; set; }
    
     public void Initialize(Sprite icon, Card card)
     {
@@ -33,7 +34,9 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
         _attackText.text = card.Attack.ToString();
         _deffenceText.text = card.Defense.ToString();
     }
+
     
+
     public void Attack(ICard target)
     {
         target.TakeDamage(_card.Attack);
@@ -41,7 +44,15 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
 
     public void TakeDamage(int amount)
     {
-        
+        if (amount > Card.Defense)
+        {
+            var finalDamage = amount - _card.Defense;
+            DamageCallBack?.Invoke(finalDamage);
+        }
+        else
+        {
+            Debug.Log("Damage Amount" +"="+ amount +"," + "Deffense Amount" + Card.Defense);
+        }
     }
 
     public void SetHealth(int health)

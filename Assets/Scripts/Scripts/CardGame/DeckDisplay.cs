@@ -6,6 +6,7 @@ using PoolingSystem;
 using Unity.Mathematics;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 public class DeckDisplay : MonoBehaviour
 {
@@ -68,6 +69,16 @@ public class DeckDisplay : MonoBehaviour
          _cards.Remove(tr);
          LayoutCards();
       }
+   }
+
+   public Transform SelectRandomCard()
+   {
+      var count = _cards.Count;
+      var random = Random.Range(0, count);
+      var card = _cards[random];
+      _cards.Remove(card);
+      LayoutCards();
+      return card;
    }
    private void LayoutCards()
    {

@@ -12,6 +12,7 @@ namespace InputSystem
         public Action<GameObject> OnCardDropped { get; set; }
         public Action<GameObject> OnCardStartDragging { get; set; }
         private bool _draggingEnabled = false;
+        private bool _inputsEnabled = true;
         public void SwitchDragging(bool enabled)
         {
             _draggingEnabled = enabled;
@@ -19,9 +20,12 @@ namespace InputSystem
 
         private void Update()
         {
-            HandleInput();
+            if (_inputsEnabled)
+            {
+                HandleInput();
+            }
         }
-
+      
         public void HandleInput()
         {
             if (Input.GetMouseButtonDown(0))
@@ -41,6 +45,11 @@ namespace InputSystem
                     OnPointerUp();
                 }
             }
+        }
+
+        public void ActivateOrDeactivateInput(bool val)
+        {
+            _inputsEnabled = val;
         }
 
         public GameObject GetSelectedCard()

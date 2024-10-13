@@ -15,4 +15,13 @@ public class OpponentPlayer : Player
             Debug.Log($"Enemy played {CurrentCard.Name}");
         }
     }
+
+    public override Card GetCurrentCard()
+    {
+        var cardCount = Deck.Count;
+        var random = Random.Range(0, cardCount);
+        var card = Deck[random];
+        Deck.Remove(card);
+        return card;
+    }
 }

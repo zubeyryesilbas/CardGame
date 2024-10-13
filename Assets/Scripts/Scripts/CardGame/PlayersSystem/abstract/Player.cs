@@ -10,12 +10,17 @@ public abstract class Player
     public Card CurrentCard;
     public int Shield;
     public int AttackBoostNextTurn;
-
+    
     public Player(int health , List<Card> cards , Skill skill)
     {
         Health = health;
         Deck = new List<Card>(cards);
         CurrentSkill = skill;
+    }
+
+    public virtual Card GetCurrentCard()
+    {
+        return CurrentCard;
     }
     
     public abstract void ProcessTurn();

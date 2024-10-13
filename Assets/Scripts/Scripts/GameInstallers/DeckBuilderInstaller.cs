@@ -13,8 +13,9 @@ public class DeckBuilderInstaller : MonoInstaller
     [SerializeField] private CardsHolderSo _cardsHolderSo;
     [SerializeField] private CardLayoutCrator _cardLayoutCrator;
     [SerializeField] private PoolController _poolController;
-    [SerializeField] private PlayersDisplay _playersDisplay;
+    [SerializeField] private BattleHandler _battleHandler;
     [SerializeField] private SkillsHolderSo _skillsHolderSo;
+    [SerializeField] private CardMovementHandler _cardMovementHandler;
     private CardFactory _cardFactory;
     public override void InstallBindings()
     {
@@ -28,7 +29,8 @@ public class DeckBuilderInstaller : MonoInstaller
         Container.Bind<CardFactory>().FromNew().AsSingle();
         Container.Bind<CardLayoutCrator>().FromInstance(_cardLayoutCrator);
         Container.Bind<PoolController>().FromInstance(_poolController);
-        Container.Bind<PlayersDisplay>().FromInstance(_playersDisplay);
+        Container.Bind<BattleHandler>().FromInstance(_battleHandler);
+        Container.Bind<CardMovementHandler>().FromInstance(_cardMovementHandler).AsSingle();
     }
 
     public override void Start()

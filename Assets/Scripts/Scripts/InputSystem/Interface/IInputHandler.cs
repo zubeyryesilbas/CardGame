@@ -5,6 +5,7 @@ namespace InputSystem
     using UnityEngine;
     public interface IInputHandler
     {
+        void ActivateOrDeactivateInput(bool val);
         void HandleInput();
         GameObject GetSelectedCard();
         Action<GameObject> OnCardClicked { get; set; }

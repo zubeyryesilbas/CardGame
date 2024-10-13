@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -7,16 +8,23 @@ using Zenject;
 
 public class CardMovementHandler : MonoBehaviour
 {
-    [Inject] private IInputHandler _inputHandler;         // Injected input handler
-    [Inject] private GameController _gameController;      // Injected game controller for game logic
+    [Inject] private IInputHandler _inputHandler;         // Injected input handler// Injected game controller for game logic
     [Inject] private DeckDisplay _deckDisplay;            // Injected deck display for card management
 
-    private Slot _slot;                                   // Current slot for placing a card
+    private BaseSlot _slot;                                   // Current slot for placing a card
     private GameObject _selectedCard;                     // The card currently being dragged
     private GameObject _fakeCard;                         // A fake card used for visual feedback
-   [SerializeField] private Collider _collider;                           // Collider for interaction detection
+   [SerializeField] private Collider _collider;
+   private BattleHandler _battleHandler;// Collider for interaction detection
     private ICard _cardInSlot;                            // Card currently in the slot
 
+    [Inject]
+    private void Constructor(BattleHandler battleHandler)
+    {
+        _battleHandler = battleHandler;
+        if (_slot == null) 
+            _slot = _battleHandler.GetPlayerSlot();
+    }
     private void Awake()
     {
         _fakeCard = new GameObject("FakeCard");          // Initialize the fake card object
@@ -72,19 +80,19 @@ public class CardMovementHandler : MonoBehaviour
             // If slot is switchable, return the card to the deck and place it in the slot
             _deckDisplay.AddCard(_cardInSlot.CardTr);
             _cardInSlot = obj.GetComponent<ICard>();
-            _gameController.PlayerCardSelected(_cardInSlot.Card.Name);
-            obj.transform.DOMove(_slot.SlotPlacePos.position, 0.3f).OnComplete(() =>
+            _battleHandler.OnCardPlaced(_cardInSlot);
+            obj.transform.DOMove(_slot.SlotPlacePoint.position, 0.3f).OnComplete(() =>
             {
                 _slot.PlaceCard();
             });
         }
         else if (_slot.Stats == SlotStats.Highlighted)
         {
-            // If slot is highlighted, place the card and notify the game controller
-            obj.transform.DOMove(_slot.SlotPlacePos.position, 0.3f).OnComplete(() =>
+            // If slot is highlighted, place the card and notify the Battle Handler
+            obj.transform.DOMove(_slot.SlotPlacePoint.position, 0.3f).OnComplete(() =>
             {
                 _cardInSlot = obj.GetComponent<ICard>();
-                _gameController.PlayerCardSelected(_cardInSlot.Card.Name); // Inform the game controller about the selected card
+               _battleHandler.OnCardPlaced(_cardInSlot); // Inform the BattleHandler about the selected card
                 _slot.PlaceCard();
             });
         }
@@ -108,7 +116,7 @@ public class CardMovementHandler : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.TryGetComponent<Slot>(out var slot))
+        if (other.transform.TryGetComponent<BaseSlot>(out var slot))
         {
             _slot = slot;                                  // Store the current slot
             
@@ -130,7 +138,7 @@ public class CardMovementHandler : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.transform.TryGetComponent<Slot>(out var slot))
+        if (other.transform.TryGetComponent<BaseSlot>(out var slot))
         {
             if (_slot.Stats == SlotStats.Highlighted)
             {
@@ -143,7 +151,6 @@ public class CardMovementHandler : MonoBehaviour
             }
             else
             {   
-                _gameController.PlayerDeselectCard();
                 slot.UnHighLight();                       // Un-highlight the slot
             }
         }
@@ -152,5 +159,32 @@ public class CardMovementHandler : MonoBehaviour
         {
             _deckDisplay.RemoveCard(_fakeCard.transform); // Remove the fake card when leaving the area
         }
+    }
+
+    public void AutoPlay(Action onEnd)
+    {   
+        _inputHandler.ActivateOrDeactivateInput(false);
+        if (_cardInSlot != null)
+        {
+            _battleHandler.OnCardPlaced(_cardInSlot);
+            return;
+        }
+        else
+        {
+          
+            if(_selectedCard == null)
+            {
+                var card = _deckDisplay.SelectRandomCard();
+                _selectedCard = card.gameObject;
+            }
+        }
+        _selectedCard.transform.DOMove(_slot.SlotPlacePoint.position, 0.3f).OnComplete(()=>
+        {
+            var card = _selectedCard.GetComponent<ICard>();
+           _battleHandler.OnCardPlaced(card);
+            _slot.PlaceCard();
+            onEnd?.Invoke();
+        });
+        _selectedCard.transform.DORotate(Vector3.zero, 0.3f);
     }
 }

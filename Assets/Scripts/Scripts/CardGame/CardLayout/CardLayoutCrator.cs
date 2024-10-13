@@ -19,9 +19,9 @@ public class CardLayoutCrator : MonoBehaviour
    private Transform _slotHolderTr;
    private Transform _cardsHolderTr;
     private IInputHandler _inputHandler;
-   private Dictionary<ICard, Slot> _slotDic = new Dictionary<ICard, Slot>();
-   private List<Slot> _cardSelectionSlots = new List<Slot>();
-   private List<Slot> _cardShowCaseSlots = new List<Slot>();
+   private Dictionary<ICard, BaseSlot> _slotDic = new Dictionary<ICard, BaseSlot>();
+   private List<BaseSlot> _cardSelectionSlots = new List<BaseSlot>();
+   private List<BaseSlot> _cardShowCaseSlots = new List<BaseSlot>();
    private List<ICard> _selectedCards = new List<ICard>();
    [SerializeField] private Button _startButton;
    private GameController _gameController;
@@ -61,7 +61,7 @@ public class CardLayoutCrator : MonoBehaviour
       _inputHandler.OnCardClicked -= OnCardClicked;
    }
 
-   private Slot GetEmptySlot(List<Slot> slotsToCheck)
+   private BaseSlot GetEmptySlot(List<BaseSlot> slotsToCheck)
    {
       foreach (var item in slotsToCheck)
       {
@@ -86,7 +86,7 @@ public class CardLayoutCrator : MonoBehaviour
             EmptySlot(card);
             emptySlot.SetCardStats(SlotStats.Ocupied);
             _slotDic.Add(card , emptySlot);
-            clickedObject.transform.position = emptySlot.SlotPlacePos.position;
+            clickedObject.transform.position = emptySlot.SlotPlacePoint.position;
          }
          _selectedCards.Add(card);
       }
@@ -99,7 +99,7 @@ public class CardLayoutCrator : MonoBehaviour
          {  
             _slotDic.Add(card ,emptySlot);
             emptySlot.SetCardStats(SlotStats.Ocupied);
-            clickedObject.transform.position = emptySlot.SlotPlacePos.position;
+            clickedObject.transform.position = emptySlot.SlotPlacePoint.position;
          }
       }
       _slotHolderTr.SetParent(transform);
@@ -139,7 +139,7 @@ public class CardLayoutCrator : MonoBehaviour
       {
          for (int j = 0; j < 2; j++)
          {
-           _cardSelectionSlots.Add(CreateSlotAtPos(new Vector3((i-1)*_spaceX, j*_spaceY , 0) ,_slotHolderTr));
+           _cardSelectionSlots.Add(CreateSlotAtPos(new Vector3((i-1)*_spaceX, -j*_spaceY , 0) ,_slotHolderTr));
          }
       }
 
@@ -151,7 +151,7 @@ public class CardLayoutCrator : MonoBehaviour
             var display = _poolController.GetFromPool(PoolType.CardDisplay , _cardsHolderTr).PoolObj.GetComponent<CardDisplay>();
             var spawnPos = new Vector3((i - 2f) * _spaceX, j * _spaceY , 0);
             var slot = CreateSlotAtPos(spawnPos, _cardsHolderTr);
-            display.transform.position = slot.SlotPlacePos.position;
+            display.transform.position = slot.SlotPlacePoint.position;
             var cardData = _cardsHolderSo.Cards[z];
             var card = new Card(cardData.CardName, cardData.Attack, cardData.Defense);
             display.Initialize(cardData.CardImage ,card);
@@ -159,12 +159,12 @@ public class CardLayoutCrator : MonoBehaviour
             z++;
          }
       }
-      _slotHolderTr.position = Vector3.zero +Vector3.up*1;
-      _cardsHolderTr.position = Vector3.zero + Vector3.down*3;
+      _slotHolderTr.position = Vector3.zero +Vector3.up*4;
+      _cardsHolderTr.position = Vector3.zero + Vector3.down*2;
    }
-   private Slot CreateSlotAtPos(Vector3 pos ,Transform parent)
+   private BaseSlot CreateSlotAtPos(Vector3 pos ,Transform parent)
    {
-      var slot = _poolController.GetFromPool(PoolType.Slot , parent).PoolObj.GetComponent<Slot>();
+      var slot = _poolController.GetFromPool(PoolType.Slot , parent).PoolObj.GetComponent<BaseSlot>();
       slot.transform.localPosition = pos;
       return slot;
    }

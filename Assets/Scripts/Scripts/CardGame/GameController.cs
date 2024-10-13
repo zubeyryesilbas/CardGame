@@ -14,28 +14,34 @@ public class GameController : MonoBehaviour
     private CardFactory _cardFactory;
     private Player _player, _opponent;
     private CardLayoutCrator _cardLayoutCrator;
-    private PlayersDisplay _playersDisplay;
+    private BattleHandler _battleHandler;
     private IInputHandler _inputHandler;
     [SerializeField] private Button _endTurnButton;
 
     [Inject]
-    public void Constructor( IInputHandler inputHandler ,PlayersDisplay playersDisplay,DeckDisplay deckDisplay , SkillFactory skillFactory , CardFactory cardFactory , CardLayoutCrator cardLayoutCrator)
+    public void Constructor( IInputHandler inputHandler ,BattleHandler battleHandler,DeckDisplay deckDisplay , SkillFactory skillFactory , CardFactory cardFactory , CardLayoutCrator cardLayoutCrator)
     {
         _deckDisplay = deckDisplay;
         _skillFactory = skillFactory;
         _cardFactory = cardFactory;
         _cardLayoutCrator = cardLayoutCrator;
-        _playersDisplay = playersDisplay;
+        _battleHandler = battleHandler;
         _inputHandler = inputHandler;
+        _endTurnButton.onClick.AddListener(EndTurnClicked);
+    }
+
+    private void EndTurnClicked()
+    {
+        _battleHandler.ShowOpponentCard(_opponent.GetCurrentCard());
     }
     public void StartGame(List<Card> cards)
     {
         _player = new UserPlayer(100, cards , _skillFactory.GetRandomSkill());
         _opponent = new OpponentPlayer(100, _cardFactory.GetUniqueRandomCards(6), _skillFactory.GetRandomSkill());
         _deckDisplay.CreateCardDisplays(cards);
-        _playersDisplay.Show();
+        _battleHandler.Show();
         _inputHandler.SwitchDragging(true);
-        _playersDisplay.UpdatePlayerSkill(_player.CurrentSkill.SkillName , _player.CurrentSkill.SkillDescription);
+        _battleHandler.UpdatePlayerSkill(_player.CurrentSkill.SkillName , _player.CurrentSkill.SkillDescription);
     }
 
     public void OnSkillUsed(Player player)
@@ -61,8 +67,15 @@ public class GameController : MonoBehaviour
         _endTurnButton.interactable = false;
     }
 
+    public void AutoPlay()
+    {   
+        _inputHandler.ActivateOrDeactivateInput(false);
+        _endTurnButton.interactable = false;
+        EndTurnClicked();
+    }
+
     public void EndTurn()
     {
-        
+           
     }
 }
