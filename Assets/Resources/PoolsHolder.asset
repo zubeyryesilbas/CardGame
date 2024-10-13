@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cad59daf7c40b401ca47d3f23863ead3, type: 3}
+  m_Name: PoolsHolder
+  m_EditorClassIdentifier: 
+  Pools:
+  - Amount: 17
+    PoolType: 0
+    CanExpandPool: 0
+    PoolPrefab: {fileID: 6741463788233475188, guid: 49f07a930ca35475ca73de759679b1af, type: 3}
+  - Amount: 20
+    PoolType: 1
+    CanExpandPool: 0
+    PoolPrefab: {fileID: 5008519789101527063, guid: 8581e1d97d1954d98b0464dd16d0409a, type: 3}
