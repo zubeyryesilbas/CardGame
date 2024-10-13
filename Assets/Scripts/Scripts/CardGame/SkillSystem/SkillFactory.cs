@@ -6,43 +6,55 @@ public class SkillFactory
 {
     private static System.Random _random = new System.Random();
     private List<Skill> _cachedSkills;
+    private Dictionary<Skill, SkillEffect[]> _skillEffects = new Dictionary<Skill, SkillEffect[]>();
 
+    public SkillEffect[] GetEffectsOfSkill(Skill skill)
+    {
+        return _skillEffects[skill];
+    }
     public SkillFactory(SkillsHolderSo skillsHolderSo)
     {
         _cachedSkills = new List<Skill>();
 
+        Skill skill = null;
         foreach (var skillData in skillsHolderSo.AllSkills)
         {
-            switch (skillData.SkillType) 
-            {
+            switch (skillData.SkillType)
+            { 
+                    
                 case SkillType.IncreaseHealth :
-                    _cachedSkills.Add(new IncreaseHealthSkill(skillData.Effects[0].EffectValue,
-                        skillData.SkillName , skillData.Description));
+                    skill = new IncreaseHealthSkill(skillData.Effects[0].EffectValue,
+                    skillData.SkillName, skillData.Description , this);
                     break;
                 case SkillType.IncreaseAttack:
-                    _cachedSkills.Add(new IncreaseAttackSkill(skillData.Effects[0].EffectValue,
-                        skillData.SkillName , skillData.Description   ));
+                    skill = new IncreaseAttackSkill(skillData.Effects[0].EffectValue,
+                        skillData.SkillName, skillData.Description , this);
                     break;
                 case SkillType.IncreaseDeffense:
-                    _cachedSkills.Add(new IncreaseDefenseSkill(skillData.Effects[0].EffectValue,
-                        skillData.SkillName , skillData.Description ));
+                    skill = new IncreaseDefenseSkill(skillData.Effects[0].EffectValue,
+                        skillData.SkillName, skillData.Description , this);
                     break;
                 case SkillType.DecreaseOpponentAttack:
-                    _cachedSkills.Add(new DecreaseOpponentAttackSkill(skillData.Effects[0].EffectValue,
-                        skillData.SkillName , skillData.Description ));
+                    skill = new DecreaseOpponentAttackSkill(skillData.Effects[0].EffectValue,
+                        skillData.SkillName, skillData.Description , this);
                     break;
                 case SkillType.DecreaseOpponentDeffense:
-                    _cachedSkills.Add(new DecreaseOpponentDefenseSkill(skillData.Effects[0].EffectValue,
-                        skillData.SkillName , skillData.Description));
+                    skill = new DecreaseOpponentDefenseSkill(skillData.Effects[0].EffectValue,
+                        skillData.SkillName, skillData.Description,this);
                     break;
                 case SkillType.ShieldSkill:
-                    _cachedSkills.Add(new ShieldSkill(skillData.Effects.FirstOrDefault(x=>x.EffectType == SkillEffectType.Shield).EffectValue , 
-                        skillData.Effects.FirstOrDefault(x=>x.EffectType == SkillEffectType.OpponentAttackBoostNextTurn).EffectValue,
-                        skillData.SkillName , skillData.Description ));
+                    skill = new ShieldSkill(
+                        skillData.Effects.FirstOrDefault(x => x.EffectType == SkillEffectType.Shield).EffectValue,
+                        skillData.Effects
+                            .FirstOrDefault(x => x.EffectType == SkillEffectType.OpponentAttackBoostNextTurn)
+                            .EffectValue,
+                        skillData.SkillName, skillData.Description , this);
                     break;
                 default:
                     break;
             }
+            _cachedSkills.Add(skill);
+            _skillEffects.Add(skill ,skillData.Effects);
         }
     }
 

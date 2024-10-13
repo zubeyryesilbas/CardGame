@@ -18,8 +18,8 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
     public Card Card => _card;
     public PoolType PoolType { get; }
     public GameObject PoolObj => gameObject;
-    public Action<float> DamageCallBack { get; set; }
-   
+    public Action<int> DamageCallBack { get; set; }
+    
     public void Initialize(Sprite icon, Card card)
     {
         _frameRenderer.sortingOrder = _orderInLayer;
@@ -33,28 +33,46 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
         _nameText.text = name;
         _attackText.text = card.Attack.ToString();
         _deffenceText.text = card.Defense.ToString();
+        card.OnDamageTaken += OnDamageTaken;
     }
 
+
+    public void ApplySkillEffects(SkillEffect[] effects)
+    {   
+        foreach (var item in effects)
+        {   
+            switch (item.EffectType)
+            {
+                case SkillEffectType.IncreaseAttack:
+                    IncreaseAttack();
+                    break;
+                case SkillEffectType.IncreaseDefense:
+                    IncreaseDeffense();
+                    break;
+                case SkillEffectType.DecreaseOpponentAttack:
+                    IncreaseAttack();
+                    break;
+                case SkillEffectType.DecreaseOpponentDefense:
+                    IncreaseDeffense();
+                    break;
+            }
+        }
+    }
+
+    private void IncreaseAttack()
+    {
+        _attackText.text = _card.Attack.ToString();
+    }
+
+    private void IncreaseDeffense()
+    {
+        _deffenceText.text = _card.Defense.ToString();
+    }
+    private void OnDamageTaken(int damage)
+    {
+        
+    }
     
-
-    public void Attack(ICard target)
-    {
-        target.TakeDamage(_card.Attack);
-    }
-
-    public void TakeDamage(int amount)
-    {
-        if (amount > Card.Defense)
-        {
-            var finalDamage = amount - _card.Defense;
-            DamageCallBack?.Invoke(finalDamage);
-        }
-        else
-        {
-            Debug.Log("Damage Amount" +"="+ amount +"," + "Deffense Amount" + Card.Defense);
-        }
-    }
-
     public void SetHealth(int health)
     {
        
@@ -65,13 +83,7 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
        
     }
 
-   
-
-    public void OnSelect()
-    {
-        
-    }
-
+    
     public void OnGetFromPool()
     {
         

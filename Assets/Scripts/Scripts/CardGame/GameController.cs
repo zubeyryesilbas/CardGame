@@ -13,10 +13,11 @@ public class GameController : MonoBehaviour
     private SkillFactory _skillFactory;
     private CardFactory _cardFactory;
     private Player _player, _opponent;
+    public Player Opponent => _opponent;
+    public Player Player => _player;
     private CardLayoutCrator _cardLayoutCrator;
     private BattleHandler _battleHandler;
     private IInputHandler _inputHandler;
-    [SerializeField] private Button _endTurnButton;
 
     [Inject]
     public void Constructor( IInputHandler inputHandler ,BattleHandler battleHandler,DeckDisplay deckDisplay , SkillFactory skillFactory , CardFactory cardFactory , CardLayoutCrator cardLayoutCrator)
@@ -27,13 +28,9 @@ public class GameController : MonoBehaviour
         _cardLayoutCrator = cardLayoutCrator;
         _battleHandler = battleHandler;
         _inputHandler = inputHandler;
-        _endTurnButton.onClick.AddListener(EndTurnClicked);
     }
 
-    private void EndTurnClicked()
-    {
-        _battleHandler.ShowOpponentCard(_opponent.GetCurrentCard());
-    }
+   
     public void StartGame(List<Card> cards)
     {
         _player = new UserPlayer(100, cards , _skillFactory.GetRandomSkill());
@@ -54,26 +51,13 @@ public class GameController : MonoBehaviour
 
     public void PlayerCardSelected(string card)
     {
-        _endTurnButton.interactable = true;
         Debug.LogError(card);
         if (card != null)
         {
             _player.SelectCard(card);
         }
     }
-
-    public void PlayerDeselectCard()
-    {
-        _endTurnButton.interactable = false;
-    }
-
-    public void AutoPlay()
-    {   
-        _inputHandler.ActivateOrDeactivateInput(false);
-        _endTurnButton.interactable = false;
-        EndTurnClicked();
-    }
-
+    
     public void EndTurn()
     {
            

@@ -167,6 +167,7 @@ public class CardMovementHandler : MonoBehaviour
         if (_cardInSlot != null)
         {
             _battleHandler.OnCardPlaced(_cardInSlot);
+            onEnd?.Invoke();
             return;
         }
         else

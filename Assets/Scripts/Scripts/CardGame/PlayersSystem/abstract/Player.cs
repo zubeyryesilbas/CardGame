@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public abstract class Player
 {
@@ -16,6 +17,14 @@ public abstract class Player
         Health = health;
         Deck = new List<Card>(cards);
         CurrentSkill = skill;
+    }
+    
+    public void TakeDamage(int damage)
+    {   
+        Debug.Log("Health" + Health);
+        var finalDamage = Shield - damage;
+        if(finalDamage <0)
+            Health += damage;
     }
 
     public virtual Card GetCurrentCard()

@@ -21,6 +21,7 @@ public class OpponentPlayer : Player
         var cardCount = Deck.Count;
         var random = Random.Range(0, cardCount);
         var card = Deck[random];
+        CurrentCard = card;
         Deck.Remove(card);
         return card;
     }

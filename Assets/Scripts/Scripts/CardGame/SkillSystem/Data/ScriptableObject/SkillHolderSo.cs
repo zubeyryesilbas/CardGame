@@ -7,11 +7,4 @@ public class SkillHolderSo : ScriptableObject
     public string SkillName;            
     public string Description;         
     public SkillEffect[] Effects;        
-    
-    [System.Serializable]
-    public struct SkillEffect
-    {
-        public SkillEffectType EffectType;
-        public int EffectValue;
-    }
 }
