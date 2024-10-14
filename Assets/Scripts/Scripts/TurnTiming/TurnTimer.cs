@@ -9,6 +9,7 @@ public class TurnTimer
     private float _time;
     private bool _canExecuteTime;
     public Action OnTimeOut;
+    private int cycle;
 
     public TurnTimer(float targetToReach)
     {
@@ -28,12 +29,14 @@ public class TurnTimer
     {
         if (_canExecuteTime)
         {
-            _time += Time.deltaTime;
-            if (_time >= _targetToReach)
-            {
+            if (_time > _targetToReach)
+            {   
+                Debug.Log("Time Out" + cycle);
+                cycle += 1;
                 _canExecuteTime = false;
                 OnTimeOut?.Invoke();
             }
+            _time += Time.deltaTime;
         }
     }
 

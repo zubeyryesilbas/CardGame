@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-
+using SkillSystem;
 public class GameController : MonoBehaviour
 {
     private DeckDisplay _deckDisplay;

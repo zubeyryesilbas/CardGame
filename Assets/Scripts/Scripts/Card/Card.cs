@@ -14,12 +14,12 @@ public class Card
         Defense = defense;
     }
     
-    public void SetAttackValue(int attack)
+    public void IncreaseOrDecreaseAttackValue(int attack)
     {
         Attack += attack;
     }
 
-    public void SetDeffenseValue(int deffense)
+    public void IncreaseOrDeccreaseDeffenseValue(int deffense)
     {
         Defense += deffense;
     }

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: SkillsHolder
   m_EditorClassIdentifier: 
   AllSkills:
-  - {fileID: 11400000, guid: 0c61846d46dcb4583881c7512e127b51, type: 2}
+  - {fileID: 11400000, guid: 3d4b543e032d74a6abe6aaab58368f74, type: 2}
+  - {fileID: 11400000, guid: f6c121cdc38bd47caa7121adeeca7971, type: 2}
+  - {fileID: 11400000, guid: 68547498f65e34327829090558991b98, type: 2}
+  - {fileID: 11400000, guid: 426234764909e452fb5a26387328c2a8, type: 2}
   - {fileID: 11400000, guid: 45337af727b0149b280562350c040de6, type: 2}
-  - {fileID: 11400000, guid: 45e8f68f460fe434aaa6b1303b5388c3, type: 2}
-  - {fileID: 11400000, guid: 80515b73c757546e593572665e8a3a26, type: 2}
-  - {fileID: 11400000, guid: 854ae9071186b4fcb905f29f1059ae57, type: 2}
-  - {fileID: 11400000, guid: 845161b18b7464996bfedd94723d8d29, type: 2}
+  - {fileID: 11400000, guid: 0c61846d46dcb4583881c7512e127b51, type: 2}

@@ -11,6 +11,7 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
     [SerializeField] private SpriteRenderer _cardIconRenderer, _frameRenderer, _labelBgRenderer;
     [SerializeField] private TextMeshPro _nameText, _attackText, _deffenceText;
     [SerializeField] private int _orderInLayer = 1;
+    [SerializeField] private TextAnimation _attackTextAnim, _deffenceTextAnim;
     public Transform CardTr => transform;
     public string CardName => _cardName;
     private string _cardName;
@@ -30,59 +31,43 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
         _labelBgRenderer.sortingOrder = _orderInLayer;
         _card = card;
         _cardIconRenderer.sprite = icon;
-        _nameText.text = name;
+        _nameText.text =_card.Name;
         _attackText.text = card.Attack.ToString();
         _deffenceText.text = card.Defense.ToString();
+        _attackTextAnim.SetInitialValue(card.Attack);
+        _deffenceTextAnim.SetInitialValue(card.Defense);
         card.OnDamageTaken += OnDamageTaken;
     }
 
 
-    public void ApplySkillEffects(SkillEffect[] effects)
+    public void ApplySkillEffect(SkillEffect effect)
     {   
-        foreach (var item in effects)
-        {   
-            switch (item.EffectType)
-            {
-                case SkillEffectType.IncreaseAttack:
-                    IncreaseAttack();
-                    break;
-                case SkillEffectType.IncreaseDefense:
-                    IncreaseDeffense();
-                    break;
-                case SkillEffectType.DecreaseOpponentAttack:
-                    IncreaseAttack();
-                    break;
-                case SkillEffectType.DecreaseOpponentDefense:
-                    IncreaseDeffense();
-                    break;
-            }
+        switch (effect.EffectType)
+        {
+            case SkillEffectType.IncreaseAttack:
+            case SkillEffectType.DecreaseOpponentAttack:
+                UpdateAttack(effect.EffectValue);
+                break;
+            case SkillEffectType.IncreaseDefense:
+            case SkillEffectType.DecreaseOpponentDefense:
+                UpdateDeffense(effect.EffectValue);
+                break;
         }
     }
 
-    private void IncreaseAttack()
-    {
-        _attackText.text = _card.Attack.ToString();
+    private void UpdateAttack(int val)
+    {   
+        _attackTextAnim.AnimateTextValue(Card.Attack);
     }
 
-    private void IncreaseDeffense()
+    private void UpdateDeffense(int val)
     {
-        _deffenceText.text = _card.Defense.ToString();
+        _deffenceTextAnim.AnimateTextValue(Card.Defense);
     }
     private void OnDamageTaken(int damage)
     {
         
     }
-    
-    public void SetHealth(int health)
-    {
-       
-    }
-
-    public void SetAttack(int attack)
-    {
-       
-    }
-
     
     public void OnGetFromPool()
     {

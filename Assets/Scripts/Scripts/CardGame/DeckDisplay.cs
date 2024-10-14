@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using PoolingSystem;
 using Unity.Mathematics;
@@ -35,7 +36,7 @@ public class DeckDisplay : MonoBehaviour
       foreach (var item in cards)
       {
          var cardDisplay = _poolController.GetFromPool(PoolType.CardDisplay).PoolObj.GetComponent<CardDisplay>();
-         cardDisplay.Initialize(_cardFactory.GetSprite(item.Name), item);
+         cardDisplay.Initialize(_cardFactory.GetSprite(item.Name),item);
          AddCard(cardDisplay.transform);
       }
    }
@@ -51,6 +52,22 @@ public class DeckDisplay : MonoBehaviour
       }
    }
 
+   public void Hover(Transform fake)
+   {  
+      if (_cards.Contains(fake)) _cards.Remove(fake);
+      var cardIndex = _cards.Count;
+      for (var i = 0; i < _cards.Count; i++)
+      {  
+         if (_cards[i].position.x < fake.position.x)
+         {
+            cardIndex--;
+         }
+      }
+      
+      _cards.Insert(cardIndex,fake);
+      LayoutCards();
+      
+   }
    public void AddCardToNearNeighbor(Transform neighbor , Transform fake)
    {
       var index = _cards.IndexOf(neighbor);

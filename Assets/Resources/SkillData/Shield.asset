@@ -9,14 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 7241655cce6814e2eb249c68db68f462, type: 3}
   m_Name: Shield
-  m_EditorClassIdentifier: Assembly-CSharp::SkillHolderSo
+  m_EditorClassIdentifier: 
   SkillType: 5
   SkillName: Shield
-  Description: Shields
+  Description: Provides the player with a shield that absorbs 10 damage for that
+    turn, but increases the opponent's played card's attack value by 10 in the next
+    turn.
   Effects:
   - EffectType: 5
-    EffectValue: 5
-  - EffectType: 0
-    EffectValue: 6
+    EffectValue: 10
+    EffectStartTurn: 1
+    EffectEndTurn: 1
+  - EffectType: 6
+    EffectValue: 10
+    EffectStartTurn: 1
+    EffectEndTurn: 1

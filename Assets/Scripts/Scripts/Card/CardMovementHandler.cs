@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using InputSystem;
 using UnityEngine;
@@ -16,8 +17,9 @@ public class CardMovementHandler : MonoBehaviour
     private GameObject _fakeCard;                         // A fake card used for visual feedback
    [SerializeField] private Collider _collider;
    private BattleHandler _battleHandler;// Collider for interaction detection
-    private ICard _cardInSlot;                            // Card currently in the slot
-
+    private ICard _cardInSlot;
+    private List<ICard> _cardsInteracting = new List<ICard>(); // Card currently in the slot
+    private bool _canInteract;
     [Inject]
     private void Constructor(BattleHandler battleHandler)
     {
@@ -46,6 +48,7 @@ public class CardMovementHandler : MonoBehaviour
 
     private void OnCardClick(GameObject obj)
     {
+        _canInteract = true;
         _collider.enabled = true;                           // Enable the collider
         _selectedCard = obj;                               // Store the selected card
         
@@ -62,13 +65,20 @@ public class CardMovementHandler : MonoBehaviour
     {
         // Follow the selected card while dragging
         if (_selectedCard != null)
-        {
+        {   
+            HoverEffect();
             transform.position = _selectedCard.transform.position; // Update position to follow the selected card
         }
     }
 
-    private void OnCardDrop(GameObject obj)
+    public void ClearCardSelections()
     {
+        _cardInSlot = null;
+        _selectedCard = null;
+    }
+    private void OnCardDrop(GameObject obj)
+    {   
+        _deckDisplay.RemoveCard(_fakeCard.transform);
         if (_selectedCard == null) return;                  // If no card is selected, exit
 
         _collider.enabled = false;                           // Disable the collider on drop
@@ -109,9 +119,17 @@ public class CardMovementHandler : MonoBehaviour
                 _deckDisplay.AddCard(obj.transform);
             }
         }
-
-        // Reset the selected card
+        
         _selectedCard = null;
+    }
+
+    private void HoverEffect()
+    {
+        if(_cardsInteracting.Count >1 && _canInteract) 
+        {
+            _fakeCard.transform.position = transform.position;
+            _deckDisplay.Hover(_fakeCard.transform);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -129,10 +147,12 @@ public class CardMovementHandler : MonoBehaviour
             slot.HighLight();                               // Highlight the slot
         }
 
-        if (other.transform.TryGetComponent<CardDisplay>(out var card))
-        {
-            _deckDisplay.RemoveCard(_fakeCard.transform); // Remove the fake card from display
-            _deckDisplay.AddCardToNearNeighbor(card.transform, _fakeCard.transform); // Add the fake card next to the displayed card
+        if (other.transform.TryGetComponent<ICard>(out var card))
+        {       
+           if(!_cardsInteracting.Contains(card)) _cardsInteracting.Add(card);
+            
+            //_deckDisplay.RemoveCard(_fakeCard.transform); // Remove the fake card from display
+            //_deckDisplay.AddCardToNearNeighbor(card.CardTr, _fakeCard.transform); // Add the fake card next to the displayed card
         }
     }
 
@@ -155,17 +175,28 @@ public class CardMovementHandler : MonoBehaviour
             }
         }
 
-        if (other.transform.TryGetComponent<CardDisplay>(out var card))
+        if (other.transform.TryGetComponent<ICard>(out var card))
         {
-            _deckDisplay.RemoveCard(_fakeCard.transform); // Remove the fake card when leaving the area
+            if (_cardsInteracting.Contains(card)) _cardsInteracting.Remove(card);
+
+            if (_cardsInteracting.Count <2)
+            {   
+                Debug.Log("Card Removed");
+                _deckDisplay.RemoveCard(_fakeCard.transform);
+            }
         }
     }
 
     public void AutoPlay(Action onEnd)
     {   
+        _canInteract = false;
+        _cardsInteracting = new List<ICard>();
+        _deckDisplay.RemoveCard(_fakeCard.transform);
         _inputHandler.ActivateOrDeactivateInput(false);
+       
+        
         if (_cardInSlot != null)
-        {
+        {   
             _battleHandler.OnCardPlaced(_cardInSlot);
             onEnd?.Invoke();
             return;
@@ -185,7 +216,10 @@ public class CardMovementHandler : MonoBehaviour
            _battleHandler.OnCardPlaced(card);
             _slot.PlaceCard();
             onEnd?.Invoke();
+            _cardInSlot = null;
+            _selectedCard = null;
         });
         _selectedCard.transform.DORotate(Vector3.zero, 0.3f);
+        
     }
 }

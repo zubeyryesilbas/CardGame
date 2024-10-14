@@ -2,16 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UserPlayer : Player
+namespace SkillSystem
 {
-    public UserPlayer(int health, List<Card> cards, Skill skill) : base(health, cards, skill) { }
-    
-    public override void ProcessTurn()
+    public class UserPlayer : Player
     {
-        if (CurrentCard != null)
-        {
-            PlayCard();
-            Debug.Log($"Player played {CurrentCard.Name}");
+        public UserPlayer(int health, List<Card> cards, Skill skill) : base(health, cards, skill) { }
+    
+        public override void ProcessTurn()
+        {   
+            base.ProcessTurn();
+            if (CurrentCard != null)
+            {
+                PlayCard();
+                Debug.Log($"Player played {CurrentCard.Name}");
+            }
         }
     }
 }
+

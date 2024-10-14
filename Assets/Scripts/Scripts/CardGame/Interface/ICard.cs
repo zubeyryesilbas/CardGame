@@ -8,6 +8,6 @@ public interface ICard
     Card Card { get; }
     Transform CardTr { get; }
     void Initialize(Sprite sprite, Card card);
-    void ApplySkillEffects(SkillEffect[] effects);
+    void ApplySkillEffect(SkillEffect effect);
     Action <int> DamageCallBack { get; set; }
 }

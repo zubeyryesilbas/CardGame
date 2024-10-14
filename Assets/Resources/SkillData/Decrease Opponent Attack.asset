@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7241655cce6814e2eb249c68db68f462, type: 3}
+  m_Name: Decrease Opponent Attack
+  m_EditorClassIdentifier: 
+  SkillType: 3
+  SkillName: Decrease Opponent Attack
+  Description: ecreases the attack value of the opponent's played card by 10 for
+    that turn.
+  Effects:
+  - EffectType: 3
+    EffectValue: 10
+    EffectStartTurn: 1
+    EffectEndTurn: 1
