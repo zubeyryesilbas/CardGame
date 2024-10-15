@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df103ad8843e04e33b5aa6accbe8d2fe, type: 3}
   m_Name: Pirate
   m_EditorClassIdentifier: 
-  CardName: Ring6
-  CardImage: {fileID: 21300000, guid: 5dc33accc0a5a421ebfec322e5fa424f, type: 3}
-  Attack: 23
-  Defense: 12
+  CardName: Pirate
+  CardImage: {fileID: 21300000, guid: 05068cd64d76648108765dcf6f259547, type: 3}
+  Attack: 32
+  Defense: 20

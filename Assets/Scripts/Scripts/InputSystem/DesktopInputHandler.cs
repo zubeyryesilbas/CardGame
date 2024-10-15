@@ -6,7 +6,7 @@ namespace InputSystem
 {
     public class DesktopInputHandler : MonoBehaviour, IInputHandler
     {
-        [SerializeField] private GameObject selectedCard;
+        private GameObject selectedCard;
         [SerializeField] private LayerMask cardLayerMask;
         public Action<GameObject> OnCardClicked { get; set; }
         public Action<GameObject> OnCardDropped { get; set; }

@@ -15,17 +15,17 @@ public class GameController : MonoBehaviour
     private Player _player, _opponent;
     public Player Opponent => _opponent;
     public Player Player => _player;
-    private CardLayoutCrator _cardLayoutCrator;
+    private CardLayoutCreator _cardLayoutCrator;
     private BattleHandler _battleHandler;
     private IInputHandler _inputHandler;
 
     [Inject]
-    public void Constructor( IInputHandler inputHandler ,BattleHandler battleHandler,DeckDisplay deckDisplay , SkillFactory skillFactory , CardFactory cardFactory , CardLayoutCrator cardLayoutCrator)
+    public void Constructor( IInputHandler inputHandler ,BattleHandler battleHandler,DeckDisplay deckDisplay , SkillFactory skillFactory , CardFactory cardFactory , CardLayoutCreator cardLayoutCreator)
     {
         _deckDisplay = deckDisplay;
         _skillFactory = skillFactory;
         _cardFactory = cardFactory;
-        _cardLayoutCrator = cardLayoutCrator;
+        _cardLayoutCrator = cardLayoutCreator;
         _battleHandler = battleHandler;
         _inputHandler = inputHandler;
     }

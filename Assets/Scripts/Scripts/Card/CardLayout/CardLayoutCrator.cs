@@ -10,12 +10,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 
-public class CardLayoutCrator : MonoBehaviour
+public class CardLayoutCreator : MonoBehaviour
 {
-   [SerializeField] private float _scale;
-   [SerializeField] private float _spaceX, _spaceY;
-   [SerializeField] private int _selectionSize;
-   [SerializeField] private CardsHolderSo _cardsHolderSo;
+   private CardsHolderSo _cardsHolderSo;
+   private CardLayoutSettings _cardLayoutSettings;
    private Transform _slotHolderTr;
    private Transform _cardsHolderTr;
     private IInputHandler _inputHandler;
@@ -28,11 +26,13 @@ public class CardLayoutCrator : MonoBehaviour
    private PoolController _poolController;
 
    [Inject]
-   private void Constructor(GameController gameController , IInputHandler inputHandler , PoolController poolController)
+   private void Constructor(CardsHolderSo cardsHolderSo , CardLayoutSettings cardLayoutSettings ,GameController gameController , IInputHandler inputHandler , PoolController poolController)
    {
       _gameController = gameController;
       _inputHandler = inputHandler;
       _poolController = poolController;
+      _cardLayoutSettings = cardLayoutSettings;
+      _cardsHolderSo = cardsHolderSo;
    }
 
    private void Start()
@@ -122,7 +122,7 @@ public class CardLayoutCrator : MonoBehaviour
    }
    private bool CheckIfCardSelectionDone()
    {
-      if (_selectedCards.Count == 6)
+      if (_selectedCards.Count == _cardLayoutSettings.SelectionSize)
       {
          return true;
       }
@@ -135,32 +135,53 @@ public class CardLayoutCrator : MonoBehaviour
    {
       if (_slotHolderTr == null) _slotHolderTr = new GameObject("SlotHolder").transform;
       if (_cardsHolderTr == null) _cardsHolderTr = new GameObject("CardHolder").transform;
-      for (var i = 0; i < 3; i++)
-      {
-         for (int j = 0; j < 2; j++)
-         {
-           _cardSelectionSlots.Add(CreateSlotAtPos(new Vector3((i-1)*_spaceX, -j*_spaceY , 0) ,_slotHolderTr));
-         }
-      }
 
-      var z = 0;
-      for (var i = 0; i < 5; i++)
+      var slotTransforms = new List<Transform>();
+      var cardTransforms = new List<Transform>();
+      for (var i = 0; i < _cardLayoutSettings.SelectionSize; i++)
       {
-         for (var j = 0; j < 2; j++)
-         {
-            var display = _poolController.GetFromPool(PoolType.CardDisplay , _cardsHolderTr).PoolObj.GetComponent<CardDisplay>();
-            var spawnPos = new Vector3((i - 2f) * _spaceX, j * _spaceY , 0);
-            var slot = CreateSlotAtPos(spawnPos, _cardsHolderTr);
-            display.transform.position = slot.SlotPlacePoint.position;
-            var cardData = _cardsHolderSo.Cards[z];
-            var card = new Card(cardData.CardName, cardData.Attack, cardData.Defense);
-            display.Initialize(cardData.CardImage ,card);
-            _cardShowCaseSlots.Add(slot);
-            z++;
-         }
+         var slot = CreateSlotAtPos(Vector3.zero, _slotHolderTr);
+         slotTransforms.Add(slot.transform);
+         _cardSelectionSlots.Add(slot);
       }
-      _slotHolderTr.position = Vector3.zero +Vector3.up*4;
-      _cardsHolderTr.position = Vector3.zero + Vector3.down*2;
+      DynamicGridPlacer.PlaceObjects(slotTransforms , _cardLayoutSettings.TopXRatio , _cardLayoutSettings.TopYRatio ,
+         _cardLayoutSettings.SpaceX,_cardLayoutSettings.SpaceY);
+      
+      var top = slotTransforms[0].position;
+      var top_DownPoint = slotTransforms.Last().position;
+      slotTransforms = new List<Transform>();
+      for (var j = 0; j<_cardsHolderSo.Cards.Length ; j++ )
+      {
+         var display = _poolController.GetFromPool(PoolType.CardDisplay , _cardsHolderTr).PoolObj.GetComponent<CardDisplay>();
+         cardTransforms.Add(display.transform);
+         var slot = CreateSlotAtPos(Vector3.zero, _cardsHolderTr);
+         slotTransforms.Add(slot.transform);
+         display.transform.position = slot.SlotPlacePoint.position;
+         var cardData = _cardsHolderSo.Cards[j];
+         var card = new Card(cardData.CardName, cardData.Attack, cardData.Defense);
+         display.Initialize(cardData.CardImage ,card);
+         _cardShowCaseSlots.Add(slot);
+      }
+      DynamicGridPlacer.PlaceObjects(slotTransforms , _cardLayoutSettings.DownXRatio , _cardLayoutSettings.DownYRatio , 
+         _cardLayoutSettings.SpaceX,_cardLayoutSettings.SpaceY);
+     
+      for (var i = 0; i < cardTransforms.Count; i++)
+      {
+         cardTransforms[i].position = _cardShowCaseSlots[i].SlotPlacePoint.position;
+      }
+      _slotHolderTr.position =Vector3.up*_cardLayoutSettings.TopOffset;
+      _cardsHolderTr.position = new Vector3(0,top_DownPoint.y , 0) + Vector3.up*_cardLayoutSettings.DownOffset;
+      var down = slotTransforms.Last().transform.position;
+
+      var aspectRatio = Screen.width / Screen.height;
+      var vertical = Mathf.Abs(top.y - down.y);
+      var horizontal = aspectRatio * vertical;
+      var topLeft = new Vector3(-horizontal, vertical, 0);
+      var topRight = new Vector3(horizontal, vertical, 0);
+      var downRight = new Vector3(horizontal, -vertical, 0);
+      var downLeft = new Vector3(-horizontal, -vertical, 0);
+      CameraPlacer.PlaceCameraToFitPoints(topLeft,topRight,downRight ,downLeft );
+     
    }
    private BaseSlot CreateSlotAtPos(Vector3 pos ,Transform parent)
    {

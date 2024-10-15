@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df103ad8843e04e33b5aa6accbe8d2fe, type: 3}
   m_Name: Inferno Knight
   m_EditorClassIdentifier: 
-  CardName: Ring5
-  CardImage: {fileID: 21300000, guid: 5dc33accc0a5a421ebfec322e5fa424f, type: 3}
-  Attack: 23
-  Defense: 12
+  CardName: Inferno Knight
+  CardImage: {fileID: 21300000, guid: 28189e3ed54f74b93bdcb412c720e205, type: 3}
+  Attack: 40
+  Defense: 32

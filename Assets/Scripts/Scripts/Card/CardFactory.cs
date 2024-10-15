@@ -12,17 +12,19 @@ public class CardFactory
 
     public void Initialize()
     {   
-        Debug.Log("Initialize");
-        if(_cardsHolderSo == null) Debug.Log("Card Holder is null");
         foreach (var item in _cardsHolderSo.Cards)
         {
             var card = new Card(item.CardName, item.Attack, item.Defense);
             _cards.Add(card);
             _spriteDic.Add(item.CardName , item.CardImage);
         }
-        Debug.Log(_cards.Count);
     }
 
+    public void ResetCards()
+    {
+        
+    }
+    
     public Sprite GetSprite(string name)
     {
         return _spriteDic[name];

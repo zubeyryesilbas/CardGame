@@ -12,12 +12,13 @@ public class DeckBuilderInstaller : MonoInstaller
     [SerializeField] private GameObject _inputhandlerGameObject;
     [SerializeField] private GameController _gameController;
     [SerializeField] private CardsHolderSo _cardsHolderSo;
-    [SerializeField] private CardLayoutCrator _cardLayoutCrator;
+    [SerializeField] private CardLayoutCreator _cardLayoutCreator;
     [SerializeField] private PoolController _poolController;
     [SerializeField] private BattleHandler _battleHandler;
     [SerializeField] private SkillsHolderSo _skillsHolderSo;
     [SerializeField] private CardMovementHandler _cardMovementHandler;
     [SerializeField] private EndBattleDisplay _endBattleDisplay;
+    [SerializeField] private CardLayoutSettings _cardLayoutSettings;
     private CardFactory _cardFactory;
     public override void InstallBindings()
     {
@@ -29,11 +30,12 @@ public class DeckBuilderInstaller : MonoInstaller
         Container.Bind<IInputHandler>().FromInstance(_inputhandlerGameObject.GetComponent<IInputHandler>()).AsSingle().NonLazy();
         Container.Bind<GameController>().FromInstance(_gameController).AsSingle();
         Container.Bind<CardFactory>().FromNew().AsSingle();
-        Container.Bind<CardLayoutCrator>().FromInstance(_cardLayoutCrator);
+        Container.Bind<CardLayoutCreator>().FromInstance(_cardLayoutCreator);
         Container.Bind<PoolController>().FromInstance(_poolController);
         Container.Bind<BattleHandler>().FromInstance(_battleHandler);
         Container.Bind<CardMovementHandler>().FromInstance(_cardMovementHandler).AsSingle();
         Container.Bind<EndBattleDisplay>().FromInstance(_endBattleDisplay).AsSingle();
+        Container.Bind<CardLayoutSettings>().FromInstance(_cardLayoutSettings).AsSingle();
     }
 
     public override void Start()
