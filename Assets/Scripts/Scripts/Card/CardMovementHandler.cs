@@ -9,9 +9,7 @@ using Zenject;
 
 public class CardMovementHandler : MonoBehaviour
 {
-    [Inject] private IInputHandler _inputHandler;         // Injected input handler// Injected game controller for game logic
-    [Inject] private DeckDisplay _deckDisplay;            // Injected deck display for card management
-
+           // Injected deck display for card managemen
     private BaseSlot _slot;                                   // Current slot for placing a card
     private GameObject _selectedCard;                     // The card currently being dragged
     private GameObject _fakeCard;                         // A fake card used for visual feedback
@@ -20,9 +18,13 @@ public class CardMovementHandler : MonoBehaviour
     private ICard _cardInSlot;
     private List<ICard> _cardsInteracting = new List<ICard>(); // Card currently in the slot
     private bool _canInteract;
+    private IInputHandler _inputHandler;         // Injected input handler// Injected game controller for game logic
+    private DeckDisplay _deckDisplay;    
     [Inject]
-    private void Constructor(BattleHandler battleHandler)
+    private void Constructor( IInputHandler inputHandler , DeckDisplay deckDisplay,BattleHandler battleHandler)
     {
+        _inputHandler = inputHandler;
+        _deckDisplay = deckDisplay;
         _battleHandler = battleHandler;
         if (_slot == null) 
             _slot = _battleHandler.GetPlayerSlot();

@@ -13,11 +13,11 @@ public abstract class Player
     
     public Card CurrentCard;
     public int Shield;
-    public int AttackBoostNextTurn;
     public Action<SkillEffect , bool> OnSkillEffectUsed;
     protected bool _isOpponet;
     public Action OnDead;
     public Action AllCardsPlayed;
+    public Action<int> OnDamageTaken;
     private List<SkillEffect> _skillEffects = new List<SkillEffect>();
 
     public void AddSkillEffect(SkillEffect skillEffect)
@@ -35,7 +35,8 @@ public abstract class Player
     }
     
     public void TakeDamage(int damage)
-    {   
+    {       
+        OnDamageTaken?.Invoke(damage);
         Debug.Log("Health" + Health);
         var finalDamage = Shield - damage;
         if (finalDamage < 0)

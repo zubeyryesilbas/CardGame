@@ -90,6 +90,7 @@ public class BattleHandler : MonoBehaviour
         _endTurnButton.interactable = true;
         _useSkillButton.interactable = true;
     }
+    
     public BaseSlot GetPlayerSlot()
     {
         return _playerSlot;
@@ -111,8 +112,6 @@ public class BattleHandler : MonoBehaviour
 
     private IEnumerator ClearCardsAndStart()
     {
-       // _opponentCard.CardTr.DOMove(_battlePos.position, 0.2f);
-       // _playerCard.CardTr.DOMove(_battlePos.position, 0.2F);
         yield return new WaitForSeconds(3f);
         _poolController.ReturnToPool(_playerCard.CardTr.transform.GetComponent<IPooledObject>());
         _poolController.ReturnToPool(_opponentCard.CardTr.transform.GetComponent<IPooledObject>());
@@ -121,6 +120,8 @@ public class BattleHandler : MonoBehaviour
             EndBattle();
         _gameController.Opponent.ProcessTurn();
         _gameController.Player.ProcessTurn();
+        _playerDisplay.DiscardEffect();
+        _opponentDisplay.DiscardEffect();
         _opponentCard = null;
         _playerCard = null;
         if(_gameController.Opponent.CurrentCard == null)
@@ -160,11 +161,11 @@ public class BattleHandler : MonoBehaviour
             case SkillEffectType.Shield:
                 if (isOpponent)
                 {   Debug.LogError("Shield Activated Opponent");
-                    _opponentDisplay.ApplyEffect();
+                    _opponentDisplay.ApplyEffect(skill);
                 }
                 else
                 {   Debug.LogError("Shield Activated User");
-                    _playerDisplay.ApplyEffect();
+                    _playerDisplay.ApplyEffect(skill);
                 }
                 break;
             case SkillEffectType.IncreaseAttack:
