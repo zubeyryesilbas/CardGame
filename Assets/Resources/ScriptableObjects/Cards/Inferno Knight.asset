@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df103ad8843e04e33b5aa6accbe8d2fe, type: 3}
-  m_Name: Ring 3
+  m_Name: Inferno Knight
   m_EditorClassIdentifier: 
-  CardName: Ring11
+  CardName: Ring5
   CardImage: {fileID: 21300000, guid: 5dc33accc0a5a421ebfec322e5fa424f, type: 3}
   Attack: 23
   Defense: 12

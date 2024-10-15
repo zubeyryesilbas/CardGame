@@ -14,14 +14,15 @@ public abstract class Player
     public Card CurrentCard;
     public int Shield;
     public int AttackBoostNextTurn;
-    public Action<SkillEffect , Player > OnSkillEffectUsed;
+    public Action<SkillEffect , bool> OnSkillEffectUsed;
+    protected bool _isOpponet;
     public Action OnDead;
     public Action AllCardsPlayed;
     private List<SkillEffect> _skillEffects = new List<SkillEffect>();
 
     public void AddSkillEffect(SkillEffect skillEffect)
-    {
-        _skillEffects.Add(skillEffect);
+    {   
+        _skillEffects.Add(new SkillEffect(skillEffect.EffectType,skillEffect.EffectValue,skillEffect.EffectStartTurn,skillEffect.EffectEndTurn));
     }
    
     public Player(int health , List<Card> cards , Skill skill)
@@ -82,32 +83,31 @@ public abstract class Player
     }
 
     private void ApplySkilleffect(SkillEffect skillEffect)
-    {   
+    {
+        int effectValue = skillEffect.EffectValue;
+
         switch (skillEffect.EffectType)
-        {   
+        {
             case SkillEffectType.Shield:
-                Shield += skillEffect.EffectValue;
+                Shield += effectValue;
                 break;
             case SkillEffectType.IncreaseAttack:
-                CurrentCard.IncreaseOrDecreaseAttackValue(skillEffect.EffectValue);
+            case SkillEffectType.OpponentAttackBoostNextTurn:
+                CurrentCard.IncreaseOrDecreaseAttackValue(effectValue);
                 break;
             case SkillEffectType.IncreaseDefense:
-                CurrentCard.IncreaseOrDeccreaseDeffenseValue(skillEffect.EffectValue);
+                CurrentCard.IncreaseOrDeccreaseDeffenseValue(effectValue);
                 break;
             case SkillEffectType.IncreaseHealth:
-                IncreaseHealth(skillEffect.EffectValue);
-                break;
-            case SkillEffectType.OpponentAttackBoostNextTurn:
-                AttackBoostNextTurn += skillEffect.EffectValue;
+                IncreaseHealth(effectValue);
                 break;
             case SkillEffectType.DecreaseOpponentDefense:
-                CurrentCard.IncreaseOrDeccreaseDeffenseValue(-skillEffect.EffectValue);
-                break;
             case SkillEffectType.DecreaseOpponentAttack:
-                CurrentCard.IncreaseOrDecreaseAttackValue(-skillEffect.EffectValue);
+                CurrentCard.IncreaseOrDecreaseAttackValue(-effectValue);
                 break;
         }
-        OnSkillEffectUsed?.Invoke(skillEffect , this);
+
+        OnSkillEffectUsed?.Invoke(skillEffect, _isOpponet);
     }
     private void IncreaseHealth(int increase)
     {

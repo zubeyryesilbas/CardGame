@@ -43,30 +43,38 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
     public void ApplySkillEffect(SkillEffect effect)
     {   
         switch (effect.EffectType)
-        {
+        {   
+            case SkillEffectType.OpponentAttackBoostNextTurn:
             case SkillEffectType.IncreaseAttack:
-            case SkillEffectType.DecreaseOpponentAttack:
                 UpdateAttack(effect.EffectValue);
                 break;
+            case SkillEffectType.DecreaseOpponentAttack:
+                UpdateAttack(-effect.EffectValue);
+                break;
             case SkillEffectType.IncreaseDefense:
-            case SkillEffectType.DecreaseOpponentDefense:
                 UpdateDeffense(effect.EffectValue);
+                break;
+            case SkillEffectType.DecreaseOpponentDefense:
+                UpdateDeffense(-effect.EffectValue);
                 break;
         }
     }
 
     private void UpdateAttack(int val)
     {   
+        Debug.LogError("Update attack" + val);
         _attackTextAnim.AnimateTextValue(Card.Attack);
     }
 
     private void UpdateDeffense(int val)
-    {
+    {   
+        Debug.LogError("Update Deffense" + val);
         _deffenceTextAnim.AnimateTextValue(Card.Defense);
     }
     private void OnDamageTaken(int damage)
     {
-        
+        transform.DOShakePosition(1f, new Vector3(1, 1, 0) * 0.05f, 50,0, false, true);
+        _deffenceTextAnim.AnimateTextValue(_card.Defense);
     }
     
     public void OnGetFromPool()

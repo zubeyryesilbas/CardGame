@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public class Card
 {
@@ -15,12 +16,15 @@ public class Card
     }
     
     public void IncreaseOrDecreaseAttackValue(int attack)
-    {
+    {   
+        Debug.LogError(Attack+"Deffense Increase" + attack);
         Attack += attack;
+        Debug.LogError(Attack+"Final Attack");
+     
     }
 
     public void IncreaseOrDeccreaseDeffenseValue(int deffense)
-    {
+    {   
         Defense += deffense;
     }
 }

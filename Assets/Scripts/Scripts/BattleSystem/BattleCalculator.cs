@@ -7,13 +7,23 @@ public static class BattleCalculator
     public static void CalculateBattle(Player player, Player opponent)
     {
         var playerAttackPower = player.CurrentCard.Attack;
-       
+        var opponentAttackPower = opponent.CurrentCard.Attack;
+        var playerDeffensePower = player.CurrentCard.Defense;
         var opponentDeffensePower = opponent.CurrentCard.Defense;
-
+        opponent.CurrentCard.IncreaseOrDeccreaseDeffenseValue(-playerAttackPower);
+        opponent.CurrentCard.OnDamageTaken?.Invoke(playerAttackPower);
+        player.CurrentCard.IncreaseOrDeccreaseDeffenseValue(-opponentAttackPower);
+        player.CurrentCard.OnDamageTaken?.Invoke(opponentAttackPower);
+        var playerTakeDamage = opponentAttackPower - playerDeffensePower;
         var opponentTakeDamage = playerAttackPower - opponentDeffensePower;
-        if (opponentTakeDamage >= 0)
+        if (opponentTakeDamage >0)
         {
             opponent.TakeDamage(opponentTakeDamage);
+        }
+
+        if (playerTakeDamage > 0)
+        {
+            player.TakeDamage(playerTakeDamage);
         }
     }
 

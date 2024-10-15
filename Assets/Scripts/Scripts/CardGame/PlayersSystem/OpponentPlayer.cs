@@ -6,7 +6,8 @@ public class OpponentPlayer : Player
 {
     public OpponentPlayer(int health, List<Card> cards, Skill skill) : base(health, cards, skill)
     {
-        CurrentCard = GetCurrentCard(); // played cards removes while processing turn and opponent card determined randomly
+        CurrentCard = GetCurrentCard();// played cards removes while processing turn and opponent card determined randomly
+        _isOpponet = true; 
     }
     
     public override void ProcessTurn()

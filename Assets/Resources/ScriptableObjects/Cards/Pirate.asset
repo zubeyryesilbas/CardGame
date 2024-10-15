@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df103ad8843e04e33b5aa6accbe8d2fe, type: 3}
-  m_Name: Goblin 3
+  m_Name: Pirate
   m_EditorClassIdentifier: 
-  CardName: Goblin3
-  CardImage: {fileID: 21300000, guid: e3a06c363f51a4670be36cf26b22d942, type: 3}
-  Attack: 10
-  Defense: 7
+  CardName: Ring6
+  CardImage: {fileID: 21300000, guid: 5dc33accc0a5a421ebfec322e5fa424f, type: 3}
+  Attack: 23
+  Defense: 12

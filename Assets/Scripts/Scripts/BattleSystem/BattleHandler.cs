@@ -100,12 +100,12 @@ public class BattleHandler : MonoBehaviour
         _turnTimer.ExecuteTime();
     }
 
-    private void HandleBattle()
+    private IEnumerator HandleBattle()
     {   
         _gameController.Opponent.GetReadyTurn();
         _gameController.Player.GetReadyTurn();
-        PlayerCheckDamage();
-        OpponentCheckDamage();
+        yield return new WaitForSeconds(2f);
+       CheckDamages();
         StartCoroutine(ClearCardsAndStart());
     }
 
@@ -132,60 +132,78 @@ public class BattleHandler : MonoBehaviour
       
     }
 
-    private void OnSkillUsed(SkillEffect skill , Player player)
+    private void OnSkillUsed(SkillEffect skill , bool isOpponent)
     {       
-        Debug.Log("Skill Used" + skill.EffectType);
-        var isOpponent = false;
-        if (player == _gameController.Opponent) isOpponent = true;
+        Debug.LogError("Skill Used" + skill.EffectType);
+        if (isOpponent)
+        {
+            
+        }
         else
         {
             _useSkillButton.interactable = false;
             _skillPresenter.HideSkill();
         }
         switch (skill.EffectType)
-        {
-            case SkillEffectType.Shield:
+        {   
+            case SkillEffectType.OpponentAttackBoostNextTurn:
                 if (isOpponent)
-                {
-                    _opponentDisplay.ApplyEffect();
+                {  
+                    Debug.LogError("Opponenet Used Effect");
+                    _opponentCard.ApplySkillEffect(skill);
                 }
                 else
                 {   
+                   _playerCard.ApplySkillEffect(skill);
+                }
+                break;
+            case SkillEffectType.Shield:
+                if (isOpponent)
+                {   Debug.LogError("Shield Activated Opponent");
+                    _opponentDisplay.ApplyEffect();
+                }
+                else
+                {   Debug.LogError("Shield Activated User");
                     _playerDisplay.ApplyEffect();
                 }
                 break;
             case SkillEffectType.IncreaseAttack:
             case SkillEffectType.IncreaseDefense:
                 if (isOpponent)
-                {
+                {   
+                    Debug.LogError("Increase Attack Opponent");
                     _opponentCard.ApplySkillEffect(skill);
                 }
                 else
-                {
+                {   
+                    Debug.LogError("Increase Attack Player");
                     _playerCard.ApplySkillEffect(skill);
                 }
                 break;
             case SkillEffectType.IncreaseHealth:
                 if (isOpponent)
-                {
+                {   
+                    Debug.LogError("Increase Health Opponent");
                     var ratio = (float)_gameController.Opponent.Health /(float) _gameController.Opponent.StartHealth;
                     _opponentDisplay.UpdatePlayerHealth(_gameController.Opponent.Health , ratio);
                 }
                 else
                 {   
+                    Debug.LogError("Increase Health Player");
                     var ratio = (float)_gameController.Player.Health /(float) _gameController.Player.StartHealth;
-                    _opponentDisplay.UpdatePlayerHealth(_gameController.Player.Health , ratio);
+                    _playerDisplay.UpdatePlayerHealth(_gameController.Player.Health , ratio);
                 }
                 break;
             case SkillEffectType.DecreaseOpponentAttack:
             case  SkillEffectType.DecreaseOpponentDefense:
                 if (isOpponent)
-                {
-                    _playerCard.ApplySkillEffect(skill);
+                {   
+                    Debug.LogError("Decrease Health Opponent");
+                    _opponentCard.ApplySkillEffect(skill);
                 }
                 else
-                {
-                    _opponentCard.ApplySkillEffect(skill);
+                {   Debug.LogError("Decrease Health Player");
+                    _playerCard.ApplySkillEffect(skill);
                 }
                 break;
         }
@@ -200,25 +218,18 @@ public class BattleHandler : MonoBehaviour
         CreateOpponentCard(_gameController.Opponent.CurrentCard);
         _cardMovementHandler.ClearCardSelections();
     }
-    private void PlayerCheckDamage()
+    private void CheckDamages()
     {
         var player = _gameController.Player;
-        var playerHealth = player.Health;
-        BattleCalculator.CalculateBattle(_gameController.Opponent , player);
-        Debug.Log("Player Health" + player.Health);
-        var ratio = (float)(playerHealth) / (float)player.StartHealth;
-        _playerDisplay.UpdatePlayerHealth(playerHealth , ratio);
+        var opponent = _gameController.Opponent;
+        BattleCalculator.CalculateBattle(player , opponent);
+        var playerRatio = (float)(player.Health) / (float)player.StartHealth;
+        var opponentRatio = (float)(opponent.Health) / (float)opponent.StartHealth;
+        _playerDisplay.UpdatePlayerHealth(player.Health , playerRatio);
+        _opponentDisplay.UpdatePlayerHealth(opponent.Health , opponentRatio);
         
     }
-    private void OpponentCheckDamage()
-    {
-        var player = _gameController.Opponent;
-        var playerHealth = player.Health;
-        BattleCalculator.CalculateBattle(_gameController.Player , player);
-        var ratio = (float)player.Health / (float)(player.StartHealth);
-        _opponentDisplay.UpdatePlayerHealth(playerHealth , ratio);
-    }
-
+    
     private void CreateOpponentCard(Card card)
     {   
         if(_opponentCard != null) return;
@@ -231,7 +242,7 @@ public class BattleHandler : MonoBehaviour
         Debug.Log("Show Opponent Card");
         _opponentCard.CardTr.DOMove(_opponentSlot.SlotPlacePoint.position, 0.3f).OnComplete(() =>
         {
-            HandleBattle();
+            StartCoroutine(HandleBattle());
         });
     }
 
