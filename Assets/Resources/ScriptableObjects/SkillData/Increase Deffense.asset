@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillType: 0
   SkillName: Increase Deffense
-  Description: Gives Extra 10 Deffense
+  Description: Gives Extra {a} Deffense
   Effects:
   - EffectType: 2
     EffectValue: 10

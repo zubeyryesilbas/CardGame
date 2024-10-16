@@ -12,13 +12,14 @@ using Random = UnityEngine.Random;
 public class DeckDisplay : MonoBehaviour
 {
    [SerializeField]private float _slice =10f;
-   [SerializeField] private float _deckoffset;
+   private float _deckoffset;
    [SerializeField] private float _cardOffset;
    [SerializeField] private float _cardPosZOffset, _cardPosYOffset;
-   private List<Transform> _cards = new List<Transform>();
    [SerializeField] private float _radius;
-    private PoolController _poolController;
-    private CardFactory _cardFactory;
+   private List<Transform> _cards = new List<Transform>();
+   private PoolController _poolController;
+   private CardFactory _cardFactory;
+   [SerializeField] private bool _dynamicUpdate;
 
     [Inject]
     private void Constructor(PoolController poolController, CardFactory cardFactory)
@@ -70,6 +71,7 @@ public class DeckDisplay : MonoBehaviour
    }
    public void AddCardToNearNeighbor(Transform neighbor , Transform fake)
    {
+      _deckoffset += _slice;
       var index = _cards.IndexOf(neighbor);
       var insetValue = index +1;
       if (insetValue <0)
@@ -80,12 +82,18 @@ public class DeckDisplay : MonoBehaviour
    }
 
    public void RemoveCard(Transform tr)
-   {
+   {  
       if (_cards.Contains(tr))
       {
+        
          _cards.Remove(tr);
          LayoutCards();
       }
+   }
+
+   private void Update()
+   {
+      if(_dynamicUpdate) LayoutCards();
    }
 
    public Transform SelectRandomCard()
@@ -99,9 +107,10 @@ public class DeckDisplay : MonoBehaviour
    }
    private void LayoutCards()
    {
+      _deckoffset = 90 - _cards.Count * _slice / 2;
       for (var i = 0; i < _cards.Count; i++)
       {
-         var angleDegree = _slice * i + _cardOffset;
+         var angleDegree = 270 +_slice*i + _deckoffset;
          var angleRadian =  (_slice*i + _deckoffset)* Mathf.Deg2Rad ;
          var eulerAngles = Vector3.forward *( angleDegree);
          Vector3 position = new Vector3(Mathf.Cos(angleRadian) * _radius, Mathf.Sin(angleRadian) * _radius,0 );

@@ -6,8 +6,8 @@ namespace InputSystem
 {
     public class DesktopInputHandler : MonoBehaviour, IInputHandler
     {
-        private GameObject selectedCard;
-        [SerializeField] private LayerMask cardLayerMask;
+        private GameObject _selectedCard;
+        [SerializeField] private LayerMask _cardLayerMask;
         public Action<GameObject> OnCardClicked { get; set; }
         public Action<GameObject> OnCardDropped { get; set; }
         public Action<GameObject> OnCardStartDragging { get; set; }
@@ -50,11 +50,13 @@ namespace InputSystem
         public void ActivateOrDeactivateInput(bool val)
         {
             _inputsEnabled = val;
+            _selectedCard = null; // This assures no suprise movements.
+
         }
 
         public GameObject GetSelectedCard()
         {
-            return selectedCard;
+            return _selectedCard;
         }
 
         private void OnPointerDown(Vector3 inputPosition)
@@ -66,18 +68,18 @@ namespace InputSystem
             RaycastHit hit;
 
             // Perform the raycast, make sure cardLayerMask is used correctly
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, cardLayerMask))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, _cardLayerMask))
             {
                 // Check if we hit an object
                 Debug.Log("Hit object: " + hit.collider.name);
-                selectedCard = hit.transform.gameObject;
+                _selectedCard = hit.transform.gameObject;
                 if (_draggingEnabled)
                 {
-                    OnCardStartDragging?.Invoke(selectedCard);
+                    OnCardStartDragging?.Invoke(_selectedCard);
                 }
                 else
                 {
-                    OnCardClicked?.Invoke(selectedCard);
+                    OnCardClicked?.Invoke(_selectedCard);
                 }
             }
             else
@@ -89,19 +91,19 @@ namespace InputSystem
 
         private void OnPointerDrag(Vector3 inputPosition)
         {
-            if (selectedCard != null)
+            if (_selectedCard != null)
             {   
                 Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(inputPosition.x, inputPosition.y, 10f));
-               selectedCard.transform.position = new Vector3(worldPosition.x, worldPosition.y, -0.2f);
+               _selectedCard.transform.position = new Vector3(worldPosition.x, worldPosition.y, -0.2f);
             }
         }
 
         private void OnPointerUp()
         {
-            if (selectedCard != null)
+            if (_selectedCard != null)
             {
-                OnCardDropped?.Invoke(selectedCard);
-                selectedCard = null;
+                OnCardDropped?.Invoke(_selectedCard);
+                _selectedCard = null;
             }
         }
         

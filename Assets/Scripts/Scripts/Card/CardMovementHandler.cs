@@ -9,17 +9,18 @@ using Zenject;
 
 public class CardMovementHandler : MonoBehaviour
 {
-           // Injected deck display for card managemen
+          
     private BaseSlot _slot;                                   // Current slot for placing a card
     private GameObject _selectedCard;                     // The card currently being dragged
     private GameObject _fakeCard;                         // A fake card used for visual feedback
-   [SerializeField] private Collider _collider;
-   private BattleHandler _battleHandler;// Collider for interaction detection
+    [SerializeField] private Collider _collider;
+    private BattleHandler _battleHandler;// Collider for interaction detection
     private ICard _cardInSlot;
     private List<ICard> _cardsInteracting = new List<ICard>(); // Card currently in the slot
     private bool _canInteract;
     private IInputHandler _inputHandler;         // Injected input handler// Injected game controller for game logic
-    private DeckDisplay _deckDisplay;    
+    private DeckDisplay _deckDisplay;
+    private Tween _dropTween;
     [Inject]
     private void Constructor( IInputHandler inputHandler , DeckDisplay deckDisplay,BattleHandler battleHandler)
     {
@@ -49,7 +50,7 @@ public class CardMovementHandler : MonoBehaviour
     }
 
     private void OnCardClick(GameObject obj)
-    {
+    {   
         _canInteract = true;
         _collider.enabled = true;                           // Enable the collider
         _selectedCard = obj;                               // Store the selected card
@@ -80,12 +81,10 @@ public class CardMovementHandler : MonoBehaviour
     }
     private void OnCardDrop(GameObject obj)
     {   
-        _deckDisplay.RemoveCard(_fakeCard.transform);
         if (_selectedCard == null) return;                  // If no card is selected, exit
 
         _collider.enabled = false;                           // Disable the collider on drop
-        
-        if (_slot == null) return;                          // If no slot is available, exit
+        // If no slot is available, exit
 
         if (_slot.Stats == SlotStats.Switch)
         {
@@ -93,7 +92,7 @@ public class CardMovementHandler : MonoBehaviour
             _deckDisplay.AddCard(_cardInSlot.CardTr);
             _cardInSlot = obj.GetComponent<ICard>();
             _battleHandler.OnCardPlaced(_cardInSlot);
-            obj.transform.DOMove(_slot.SlotPlacePoint.position, 0.3f).OnComplete(() =>
+           _dropTween =  obj.transform.DOMove(_slot.SlotPlacePoint.position, 0.3f).OnComplete(() =>
             {
                 _slot.PlaceCard();
             });
@@ -101,7 +100,7 @@ public class CardMovementHandler : MonoBehaviour
         else if (_slot.Stats == SlotStats.Highlighted)
         {
             // If slot is highlighted, place the card and notify the Battle Handler
-            obj.transform.DOMove(_slot.SlotPlacePoint.position, 0.3f).OnComplete(() =>
+           _dropTween =  obj.transform.DOMove(_slot.SlotPlacePoint.position, 0.3f).OnComplete(() =>
             {
                 _cardInSlot = obj.GetComponent<ICard>();
                _battleHandler.OnCardPlaced(_cardInSlot); // Inform the BattleHandler about the selected card
@@ -190,7 +189,8 @@ public class CardMovementHandler : MonoBehaviour
     }
 
     public void AutoPlay(Action onEnd)
-    {   
+    {       
+        if(_dropTween != null) _dropTween.Kill();
         _canInteract = false;
         _cardsInteracting = new List<ICard>();
         _deckDisplay.RemoveCard(_fakeCard.transform);
@@ -200,6 +200,14 @@ public class CardMovementHandler : MonoBehaviour
         if (_cardInSlot != null)
         {   
             _battleHandler.OnCardPlaced(_cardInSlot);
+            if (_selectedCard != null)
+            {
+                if (_selectedCard.transform != _cardInSlot.CardTr)
+                {
+                    _deckDisplay.AddCard(_selectedCard.transform);
+                }
+            }
+            _selectedCard = null;
             onEnd?.Invoke();
             return;
         }
@@ -222,6 +230,5 @@ public class CardMovementHandler : MonoBehaviour
             _selectedCard = null;
         });
         _selectedCard.transform.DORotate(Vector3.zero, 0.3f);
-        
     }
 }

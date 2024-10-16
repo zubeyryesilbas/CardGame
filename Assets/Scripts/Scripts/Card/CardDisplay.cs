@@ -12,14 +12,12 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
     [SerializeField] private TextMeshPro _nameText, _attackText, _deffenceText;
     [SerializeField] private int _orderInLayer = 1;
     [SerializeField] private TextAnimation _attackTextAnim, _deffenceTextAnim;
+    [SerializeField] private CardEffect _effect;
     public Transform CardTr => transform;
-    public string CardName => _cardName;
-    private string _cardName;
     private Card _card;
     public Card Card => _card;
     public PoolType PoolType { get; }
     public GameObject PoolObj => gameObject;
-    public Action<int> DamageCallBack { get; set; }
     
     public void Initialize(Sprite icon, Card card)
     {
@@ -41,7 +39,8 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
 
 
     public void ApplySkillEffect(SkillEffect effect)
-    {   
+    {       
+        _effect.PlayEffect(effect);
         switch (effect.EffectType)
         {   
             case SkillEffectType.OpponentAttackBoostNextTurn:
@@ -62,13 +61,11 @@ public class CardDisplay : MonoBehaviour, ICard,IPooledObject
 
     private void UpdateAttack(int val)
     {   
-        Debug.LogError("Update attack" + val);
         _attackTextAnim.AnimateTextValue(Card.Attack);
     }
 
     private void UpdateDeffense(int val)
-    {   
-        Debug.LogError("Update Deffense" + val);
+    {  
         _deffenceTextAnim.AnimateTextValue(Card.Defense);
     }
     private void OnDamageTaken(int damage)

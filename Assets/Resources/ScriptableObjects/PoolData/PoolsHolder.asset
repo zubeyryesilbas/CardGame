@@ -15,7 +15,7 @@ MonoBehaviour:
   Pools:
   - Amount: 17
     PoolType: 0
-    CanExpandPool: 0
+    CanExpandPool: 1
     PoolPrefab: {fileID: 6741463788233475188, guid: 49f07a930ca35475ca73de759679b1af, type: 3}
   - Amount: 20
     PoolType: 1

@@ -20,7 +20,11 @@ public class OpponentPlayer : Player
     private Card GetCurrentCard()
     {   
         var cardCount = Deck.Count;
-        Debug.Log("Card Count "+ cardCount);
+        if (cardCount == 0)
+        {   
+            AllCardsPlayed?.Invoke();
+            return null;
+        }
         var random = Random.Range(0, cardCount);
         var card = Deck[random];
         return card;

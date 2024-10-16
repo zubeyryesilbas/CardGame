@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillType: 3
   SkillName: Decrease Opponent Attack
-  Description: ecreases the attack value of the opponent's played card by 10 for
-    that turn.
+  Description: Decreases opponent Attack by {a}
   Effects:
   - EffectType: 3
     EffectValue: 10

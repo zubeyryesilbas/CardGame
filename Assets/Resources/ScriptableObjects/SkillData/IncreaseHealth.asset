@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillType: 0
   SkillName: Increase Health
-  Description: Gives Extra 10 Health
+  Description: Gives Extra {a} Health
   Effects:
   - EffectType: 0
     EffectValue: 10

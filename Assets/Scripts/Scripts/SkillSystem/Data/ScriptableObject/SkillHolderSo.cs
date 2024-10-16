@@ -9,6 +9,7 @@ namespace SkillSystem
         public SkillType SkillType;
         public string SkillName;            
         public string Description;         
-        public SkillEffect[] Effects;        
+        public SkillEffect[] Effects;
+        
     }
 }

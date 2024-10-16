@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using InputSystem;
 using PoolingSystem;
+using SkillSystem;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
@@ -25,9 +27,20 @@ public class BattleHandler : MonoBehaviour
     private ICard _opponentCard;
     private GameController _gameController;
     private EndBattleDisplay _endBattleDisplay;
+    private PlayerController _userPlayerController;
+    private PlayerController _opponentPlayerController;
+    private Player _player, _opponent;
+    
+
+    private void Awake()
+    {
+        _endTurnButton.gameObject.SetActive(false);
+        _useSkillButton.gameObject.SetActive(false);
+        _skillPresenter.gameObject.SetActive(false);
+    }
 
     [Inject]
-    public void Constructor(EndBattleDisplay endBattleDisplay, IInputHandler inputHandler,PoolController poolController, CardFactory cardFactory , GameController gameController , CardMovementHandler cardMovementHandler)
+    public void Constructor(SettingsHolderSO settingsHolderSo ,EndBattleDisplay endBattleDisplay, IInputHandler inputHandler,PoolController poolController, CardFactory cardFactory , GameController gameController , CardMovementHandler cardMovementHandler)
     {
         _endBattleDisplay = endBattleDisplay;
         _inputHandler = inputHandler;
@@ -35,8 +48,7 @@ public class BattleHandler : MonoBehaviour
         _poolController = poolController;
         _cardFactory = cardFactory;
         _gameController = gameController;
-       
-        _turnTimer = new TurnTimer(8);
+        _turnTimer = new TurnTimer(settingsHolderSo.TurnDuration);
         _endTurnButton.onClick.AddListener(EndTurnClicked);
         _useSkillButton.onClick.AddListener(UseSkill);
         _turnTimer.OnTimeOut += () =>
@@ -47,25 +59,40 @@ public class BattleHandler : MonoBehaviour
             });
         };
     }
-    
+
+    public void StartBattle(Player player , Player opponent)
+    {   
+        _player = player;
+        _opponent = opponent;
+        _userPlayerController = new PlayerController(_player, _playerDisplay);
+        _opponentPlayerController = new PlayerController(_opponent, _opponentDisplay);
+        _player.AllCardsPlayed += EndBattle;
+        _player.OnDead += EndBattle;
+        _opponent.OnDead += EndBattle;
+        StartTurn();
+        Show();
+    }
     private void EndTurnClicked()
     {       
+        _inputHandler.ActivateOrDeactivateInput(false);
         _endTurnButton.interactable = false;
         _useSkillButton.interactable = false;
         _turnTimer.EnableProcess(false);
         ShowOpponentCard();
     }
-    public void UpdatePlayerSkill(string header , string description)
+    private void UpdatePlayerSkill(string header , string description)
     {
         _skillPresenter.UpdateSkill(header ,description);
     }
 
     private void UseSkill()
     {   
-        _gameController.Player.CurrentSkill.Apply(_gameController.Player , _gameController.Opponent);
+        _player.CurrentSkill.Apply(_player , _opponent);
         _useSkillButton.gameObject.SetActive(false);
+        _skillPresenter.gameObject.SetActive(false);
     }
-    public void Show()
+    
+    private void Show()
     {   
         _endTurnButton.interactable = false;
         _playerSlot.gameObject.SetActive(true);
@@ -74,19 +101,17 @@ public class BattleHandler : MonoBehaviour
         _opponentDisplay.gameObject.SetActive(true);
         _skillPresenter.gameObject.SetActive(true);
         _timerDisplay.gameObject.SetActive(true);
+        _endTurnButton.gameObject.SetActive(true);
+        _useSkillButton.gameObject.SetActive(true);
+        _useSkillButton.interactable = true;
         _turnTimer.EnableProcess(true);
-       _gameController.Player.OnSkillEffectUsed += OnSkillUsed;
-        _gameController.Opponent.OnSkillEffectUsed+= OnSkillUsed;
-        _gameController.Opponent.OnDead += EndBattle;
-        _gameController.Opponent.AllCardsPlayed += EndBattle;
-        _gameController.Player.OnDead += EndBattle;
-        StartTurn();
+        UpdatePlayerSkill(_player.CurrentSkill.SkillName , _player.CurrentSkill.SkillDescription);
     }
 
     public void OnCardPlaced(ICard card)
     {   
+        _userPlayerController.SwitchCard(card);
         _playerCard = card;
-        _gameController.Player.CurrentCard = card.Card;
         _endTurnButton.interactable = true;
         _useSkillButton.interactable = true;
     }
@@ -103,10 +128,10 @@ public class BattleHandler : MonoBehaviour
 
     private IEnumerator HandleBattle()
     {   
-        _gameController.Opponent.GetReadyTurn();
-        _gameController.Player.GetReadyTurn();
+        _opponent.GetReadyTurn();
+        _player.GetReadyTurn();
         yield return new WaitForSeconds(2f);
-       CheckDamages();
+        BattleCalculator.CalculateBattle(_player , _opponent);
         StartCoroutine(ClearCardsAndStart());
     }
 
@@ -116,15 +141,14 @@ public class BattleHandler : MonoBehaviour
         _poolController.ReturnToPool(_playerCard.CardTr.transform.GetComponent<IPooledObject>());
         _poolController.ReturnToPool(_opponentCard.CardTr.transform.GetComponent<IPooledObject>());
         yield return new WaitForSeconds(0.5f);
-        if(_gameController.Opponent.CurrentCard == null)
+        if(_opponent.CurrentCard == null)
             EndBattle();
-        _gameController.Opponent.ProcessTurn();
-        _gameController.Player.ProcessTurn();
-        _playerDisplay.DiscardEffect();
-        _opponentDisplay.DiscardEffect();
+        
+        _opponent.ProcessTurn();
+        _player.ProcessTurn();
         _opponentCard = null;
         _playerCard = null;
-        if(_gameController.Opponent.CurrentCard == null)
+        if(_opponent.CurrentCard == null)
             EndBattle();
         else
         {
@@ -132,114 +156,30 @@ public class BattleHandler : MonoBehaviour
         }
       
     }
-
-    private void OnSkillUsed(SkillEffect skill , bool isOpponent)
-    {       
-        Debug.LogError("Skill Used" + skill.EffectType);
-        if (isOpponent)
-        {
-            
-        }
-        else
-        {
-            _useSkillButton.interactable = false;
-            _skillPresenter.HideSkill();
-        }
-        switch (skill.EffectType)
-        {   
-            case SkillEffectType.OpponentAttackBoostNextTurn:
-                if (isOpponent)
-                {  
-                    Debug.LogError("Opponenet Used Effect");
-                    _opponentCard.ApplySkillEffect(skill);
-                }
-                else
-                {   
-                   _playerCard.ApplySkillEffect(skill);
-                }
-                break;
-            case SkillEffectType.Shield:
-                if (isOpponent)
-                {   Debug.LogError("Shield Activated Opponent");
-                    _opponentDisplay.ApplyEffect(skill);
-                }
-                else
-                {   Debug.LogError("Shield Activated User");
-                    _playerDisplay.ApplyEffect(skill);
-                }
-                break;
-            case SkillEffectType.IncreaseAttack:
-            case SkillEffectType.IncreaseDefense:
-                if (isOpponent)
-                {   
-                    Debug.LogError("Increase Attack Opponent");
-                    _opponentCard.ApplySkillEffect(skill);
-                }
-                else
-                {   
-                    Debug.LogError("Increase Attack Player");
-                    _playerCard.ApplySkillEffect(skill);
-                }
-                break;
-            case SkillEffectType.IncreaseHealth:
-                if (isOpponent)
-                {   
-                    Debug.LogError("Increase Health Opponent");
-                    var ratio = (float)_gameController.Opponent.Health /(float) _gameController.Opponent.StartHealth;
-                    _opponentDisplay.UpdatePlayerHealth(_gameController.Opponent.Health , ratio);
-                }
-                else
-                {   
-                    Debug.LogError("Increase Health Player");
-                    var ratio = (float)_gameController.Player.Health /(float) _gameController.Player.StartHealth;
-                    _playerDisplay.UpdatePlayerHealth(_gameController.Player.Health , ratio);
-                }
-                break;
-            case SkillEffectType.DecreaseOpponentAttack:
-            case  SkillEffectType.DecreaseOpponentDefense:
-                if (isOpponent)
-                {   
-                    Debug.LogError("Decrease Health Opponent");
-                    _opponentCard.ApplySkillEffect(skill);
-                }
-                else
-                {   Debug.LogError("Decrease Health Player");
-                    _playerCard.ApplySkillEffect(skill);
-                }
-                break;
-        }
-    }
-
     private void StartTurn()
-    {  
+    {
+        _useSkillButton.interactable = true;
         _playerSlot.UnHighLight();
         _inputHandler.ActivateOrDeactivateInput(true);
         _turnTimer.ResetTimer();
         _turnTimer.EnableProcess(true);
-        CreateOpponentCard(_gameController.Opponent.CurrentCard);
+        CreateOpponentCard(_opponent.CurrentCard);
         _cardMovementHandler.ClearCardSelections();
     }
-    private void CheckDamages()
-    {
-        var player = _gameController.Player;
-        var opponent = _gameController.Opponent;
-        BattleCalculator.CalculateBattle(player , opponent);
-        var playerRatio = (float)(player.Health) / (float)player.StartHealth;
-        var opponentRatio = (float)(opponent.Health) / (float)opponent.StartHealth;
-        _playerDisplay.UpdatePlayerHealth(player.Health , playerRatio);
-        _opponentDisplay.UpdatePlayerHealth(opponent.Health , opponentRatio);
-        
-    }
+  
     
     private void CreateOpponentCard(Card card)
     {   
         if(_opponentCard != null) return;
+        
         _opponentCard = _poolController.GetFromPool(PoolType.CardDisplay).PoolObj.GetComponent<CardDisplay>();
+        _opponentPlayerController.SwitchCard(_opponentCard);
         _opponentCard.CardTr.position = _cardSpawnPos.position;
         _opponentCard.Initialize(_cardFactory.GetSprite(card.Name ),card);
     }
     private void ShowOpponentCard()
     {   
+        _opponentPlayerController.SwitchCard(_opponentCard);
         Debug.Log("Show Opponent Card");
         _opponentCard.CardTr.DOMove(_opponentSlot.SlotPlacePoint.position, 0.3f).OnComplete(() =>
         {
@@ -247,9 +187,18 @@ public class BattleHandler : MonoBehaviour
         });
     }
 
-    private void EndBattle()
+    private void CloseGameUi()
     {
-        var battleResult = BattleCalculator.CalculateBattleResult(_gameController.Player, _gameController.Opponent);
+        _useSkillButton.gameObject.SetActive(false);
+        _skillPresenter.gameObject.SetActive(false);
+        _endTurnButton.gameObject.SetActive(false);
+        _playerDisplay.gameObject.SetActive(false);
+        _opponentDisplay.gameObject.SetActive(false);
+    }
+    private void EndBattle()
+    {   
+        CloseGameUi();
+        var battleResult = BattleCalculator.CalculateBattleResult(_player, _opponent);
         Debug.Log(battleResult);
         _endBattleDisplay.ShowBattleEnd(battleResult);
     }

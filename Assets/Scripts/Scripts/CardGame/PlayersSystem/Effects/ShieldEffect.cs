@@ -17,11 +17,25 @@ public class ShieldEffect : BaseEffect
         _barText.text =effectValue.ToString();
     }
 
-    public void TakeDamage(float damage)
-    {
-        var finalShield = _shieldAmount - damage;
-        var ratio = finalShield / _shieldAmount;
-        _basicHealthBar.SetValue(ratio);
+    public void TakeDamage(int damage)
+    {   
+        var finalShield = _shieldAmount + damage;
+        var ratio = 0f;
+        if (finalShield > 0)
+        {
+            ratio = (float)finalShield / (float)_shieldAmount;
+        }
+        else
+        {
+            ratio = 0f;
+            finalShield = 0;
+        }
+       
+        if (_basicHealthBar.gameObject.activeSelf)
+        {
+            _barText.text = finalShield.ToString();
+            _basicHealthBar.SetValue(ratio);
+        }
     }
     public override void Hide()
     {

@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillType: 4
   SkillName: Decrease Opponent Defense
-  Description: Decreases the defense value of the opponent's played card by E10for
-    that turn.
+  Description: Decreases Opponent Deffense by {a}
   Effects:
   - EffectType: 4
     EffectValue: 10

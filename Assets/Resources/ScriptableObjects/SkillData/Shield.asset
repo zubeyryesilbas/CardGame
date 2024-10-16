@@ -14,9 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SkillType: 5
   SkillName: Shield
-  Description: Provides the player with a shield that absorbs 10 damage for that
-    turn, but increases the opponent's played card's attack value by 10 in the next
-    turn.
+  Description: Gives {a} Shield for this turn , increases opponent attack by {b}
+    next turn
   Effects:
   - EffectType: 5
     EffectValue: 10

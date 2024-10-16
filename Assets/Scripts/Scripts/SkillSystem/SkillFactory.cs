@@ -34,23 +34,37 @@ namespace SkillSystem
 
         private Skill CreateSkill(SkillHolderSo skillData)
         {
+            var description = ResolvedDescription(skillData);
             switch (skillData.SkillType)
             {
                 case SkillType.IncreaseHealth:
-                    return new IncreaseHealthSkill(skillData.SkillName, skillData.Description, skillData.Effects);
+                    return new IncreaseHealthSkill(skillData.SkillName, description, skillData.Effects);
                 case SkillType.IncreaseAttack:
-                    return new IncreaseAttackSkill(skillData.SkillName, skillData.Description, skillData.Effects);
+                    return new IncreaseAttackSkill(skillData.SkillName, description, skillData.Effects);
                 case SkillType.IncreaseDeffense:
-                    return new IncreaseDefenseSkill(skillData.SkillName, skillData.Description, skillData.Effects);
+                    return new IncreaseDefenseSkill(skillData.SkillName, description, skillData.Effects);
                 case SkillType.DecreaseOpponentAttack:
-                    return new DecreaseOpponentAttackSkill(skillData.Effects[0].EffectValue, skillData.SkillName, skillData.Description, skillData.Effects);
+                    return new DecreaseOpponentAttackSkill(skillData.Effects[0].EffectValue, skillData.SkillName, description, skillData.Effects);
                 case SkillType.DecreaseOpponentDeffense:
-                    return new DecreaseOpponentDefenseSkill(skillData.SkillName, skillData.Description, skillData.Effects);
+                    return new DecreaseOpponentDefenseSkill(skillData.SkillName, description, skillData.Effects);
                 case SkillType.ShieldSkill:
-                    return new ShieldSkill(skillData.SkillName, skillData.Description, skillData.Effects);
+                    return new ShieldSkill(skillData.SkillName, description, skillData.Effects);
                 default:
                     return null; // In case of an unsupported skill type
             }
+        }
+
+        private string ResolvedDescription(SkillHolderSo skillHolderSo)
+        {
+            var description = skillHolderSo.Description.ToString(); // Get the description as a string
+
+            // Replace placeholders and assign back to the 'description' variable
+            description = description.Replace("{a}", skillHolderSo.Effects[0].EffectValue.ToString());
+
+            if (skillHolderSo.Effects.Length > 1)
+                description = description.Replace("{b}", skillHolderSo.Effects[1].EffectValue.ToString());
+
+            return description; // Return the modified string
         }
 
         public Skill GetRandomSkill()

@@ -18,6 +18,7 @@ public abstract class Player
     public Action OnDead;
     public Action AllCardsPlayed;
     public Action<int> OnDamageTaken;
+    public Action OnProcessTurn;
     private List<SkillEffect> _skillEffects = new List<SkillEffect>();
 
     public void AddSkillEffect(SkillEffect skillEffect)
@@ -36,8 +37,6 @@ public abstract class Player
     
     public void TakeDamage(int damage)
     {       
-        OnDamageTaken?.Invoke(damage);
-        Debug.Log("Health" + Health);
         var finalDamage = Shield - damage;
         if (finalDamage < 0)
             Health += finalDamage;
@@ -47,6 +46,7 @@ public abstract class Player
             OnDead?.Invoke();
             Health = 0;
         }
+        OnDamageTaken?.Invoke(damage);
     }
 
     public void GetReadyTurn()
@@ -73,6 +73,7 @@ public abstract class Player
     public virtual void ProcessTurn()
     {
         Shield = 0;
+        OnProcessTurn?.Invoke();
     }
 
     protected virtual void PlayCard()
@@ -99,10 +100,12 @@ public abstract class Player
             case SkillEffectType.IncreaseDefense:
                 CurrentCard.IncreaseOrDeccreaseDeffenseValue(effectValue);
                 break;
+            case SkillEffectType.DecreaseOpponentDefense:
+                CurrentCard.IncreaseOrDeccreaseDeffenseValue(-effectValue);
+                break;
             case SkillEffectType.IncreaseHealth:
                 IncreaseHealth(effectValue);
                 break;
-            case SkillEffectType.DecreaseOpponentDefense:
             case SkillEffectType.DecreaseOpponentAttack:
                 CurrentCard.IncreaseOrDecreaseAttackValue(-effectValue);
                 break;

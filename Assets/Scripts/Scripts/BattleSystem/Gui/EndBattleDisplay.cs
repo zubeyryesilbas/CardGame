@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class EndBattleDisplay : MonoBehaviour
-{
+{   
+    [Inject] private GameController _gameController;
     [SerializeField] private BattleEndAnimation[] _battleEnds;
 
     private Dictionary<BattleResult, BattleEndAnimation> _animationDic =
@@ -21,7 +23,8 @@ public class EndBattleDisplay : MonoBehaviour
         {
             _animationDic.Add(item.BattleResult , item);
             item.Initialize(() =>
-            {
+            {   
+                _gameController.ReStartGame();
                 item.Hide();
             });
         }

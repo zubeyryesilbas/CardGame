@@ -16,12 +16,13 @@ public class BattleEndAnimation
     public void Initialize(Action onClick)
     {   
         _button.onClick.AddListener(()=>onClick?.Invoke());
-        _text.color = _textColor;
-        _button.image.color = _buttonColor;
     }
 
     public void Show()
-    {   
+    {       
+        _button.gameObject.SetActive(true);
+        _text.color = _textColor;
+        _button.image.color = _buttonColor;
         _text.transform.localScale = Vector3.one * 1.5f;
         _text.alpha = 0.5f;
         _text.gameObject.SetActive(true);

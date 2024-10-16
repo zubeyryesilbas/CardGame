@@ -7,59 +7,42 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using SkillSystem;
+using UnityEngine.SceneManagement;
+
 public class GameController : MonoBehaviour
 {
     private DeckDisplay _deckDisplay;
     private SkillFactory _skillFactory;
     private CardFactory _cardFactory;
-    private Player _player, _opponent;
-    public Player Opponent => _opponent;
-    public Player Player => _player;
-    private CardLayoutCreator _cardLayoutCrator;
     private BattleHandler _battleHandler;
     private IInputHandler _inputHandler;
+    private SettingsHolderSO _settingsHolderSo;
 
     [Inject]
-    public void Constructor( IInputHandler inputHandler ,BattleHandler battleHandler,DeckDisplay deckDisplay , SkillFactory skillFactory , CardFactory cardFactory , CardLayoutCreator cardLayoutCreator)
+    public void Constructor( SettingsHolderSO settingsHolderSo ,IInputHandler inputHandler ,BattleHandler battleHandler,DeckDisplay deckDisplay , SkillFactory skillFactory , CardFactory cardFactory )
     {
+        _settingsHolderSo = settingsHolderSo;
         _deckDisplay = deckDisplay;
         _skillFactory = skillFactory;
         _cardFactory = cardFactory;
-        _cardLayoutCrator = cardLayoutCreator;
         _battleHandler = battleHandler;
         _inputHandler = inputHandler;
     }
 
    
     public void StartGame(List<Card> cards)
-    {
-        _player = new UserPlayer(100, cards , _skillFactory.GetRandomSkill());
-        _opponent = new OpponentPlayer(100, _cardFactory.GetUniqueRandomCards(6), _skillFactory.GetRandomSkill());
+    {   
+        
+       var player= new UserPlayer(_settingsHolderSo.PlayerStartHealth, cards , _skillFactory.GetRandomSkill());
+        var opponent = new OpponentPlayer(_settingsHolderSo.PlayerStartHealth, _cardFactory.GetUniqueRandomCards(6), _skillFactory.GetRandomSkill());
         _deckDisplay.CreateCardDisplays(cards);
-        _battleHandler.Show();
+        _battleHandler.StartBattle(player , opponent);
         _inputHandler.SwitchDragging(true);
-        _battleHandler.UpdatePlayerSkill(_player.CurrentSkill.SkillName , _player.CurrentSkill.SkillDescription);
     }
 
-    public void OnSkillUsed(Player player)
+    public void ReStartGame()
     {
-        if (_player == player)
-        {
-            var skill = _player.CurrentSkill;
-        }
-    }
-
-    public void PlayerCardSelected(string card)
-    {
-        Debug.LogError(card);
-        if (card != null)
-        {
-            _player.SelectCard(card);
-        }
+        SceneManager.LoadScene(0);
     }
     
-    public void EndTurn()
-    {
-           
-    }
 }

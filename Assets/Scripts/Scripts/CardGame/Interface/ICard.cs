@@ -9,5 +9,4 @@ public interface ICard
     Transform CardTr { get; }
     void Initialize(Sprite sprite, Card card);
     void ApplySkillEffect(SkillEffect effect);
-    Action <int> DamageCallBack { get; set; }
 }
