@@ -240,7 +240,7 @@ MonoBehaviour:
   _slotPlacePoint: {fileID: 6758073263074574038}
   _frameRenderer: {fileID: 5767492633352537024}
   _highlightColor: {r: 0.5, g: 1, b: 0.5, a: 1}
-  _unhighlightColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  _unhighlightColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   _cardPlacedColor: {r: 0.5, g: 0.5, b: 1, a: 1}
   _switchColor: {r: 1, g: 1, b: 0.5, a: 1}
 --- !u!1 &7485852985215040597

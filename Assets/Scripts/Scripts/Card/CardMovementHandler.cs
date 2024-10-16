@@ -151,9 +151,7 @@ public class CardMovementHandler : MonoBehaviour
         if (other.transform.TryGetComponent<ICard>(out var card))
         {       
            if(!_cardsInteracting.Contains(card)) _cardsInteracting.Add(card);
-            
-            //_deckDisplay.RemoveCard(_fakeCard.transform); // Remove the fake card from display
-            //_deckDisplay.AddCardToNearNeighbor(card.CardTr, _fakeCard.transform); // Add the fake card next to the displayed card
+           
         }
     }
 
@@ -180,7 +178,7 @@ public class CardMovementHandler : MonoBehaviour
         {
             if (_cardsInteracting.Contains(card)) _cardsInteracting.Remove(card);
 
-            if (_cardsInteracting.Count <2)
+            if (_cardsInteracting.Count <= 2)
             {   
                 Debug.Log("Card Removed");
                 _deckDisplay.RemoveCard(_fakeCard.transform);

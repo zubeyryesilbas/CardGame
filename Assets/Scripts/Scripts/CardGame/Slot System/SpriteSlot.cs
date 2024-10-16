@@ -10,11 +10,13 @@ public class SpriteSlot : BaseSlot
     private Vector3 _frameDefaultScale;
     private Tween _highlightTween;
     [SerializeField] private Color _highlightColor = new Color(0.5f, 1f, 0.5f); // Color to change to during highlight (light green)
-    [SerializeField] private Color _unhighlightColor = new Color(1f, 0.5f, 0.5f); // Color when unhighlighting (light red)
+    [SerializeField] private Color _unhighlightColor = Color.gray;
     [SerializeField] private Color _cardPlacedColor = new Color(0.5f, 0.5f, 1f); // Color when card is placed (light blue)
     [SerializeField] private Color _switchColor = new Color(1f, 1f, 0.5f); // Color when switching (light yellow)
 
-    private void Awake()
+  
+
+    private void Start()
     {
         _frameDefaultScale = _frameRenderer.transform.localScale;
     }
@@ -41,7 +43,8 @@ public class SpriteSlot : BaseSlot
     }
 
     public override void UnHighLight()
-    {
+    {   
+        if(_stats == SlotStats.Empty) return;
         _frameRenderer.color = _unhighlightColor;
         _frameRenderer.transform.DOKill();
         _frameRenderer.transform.DOScale(_frameDefaultScale, 0.2f).SetEase(Ease.OutBounce);
