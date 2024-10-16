@@ -18,19 +18,19 @@ public class CardEffect : MonoBehaviour
         {   
             case SkillEffectType.OpponentAttackBoostNextTurn:
             case SkillEffectType.IncreaseAttack:
-                _effectText.text = "Attack Boost" + effect.EffectValue;
+                _effectText.text = "Attack Boost " + effect.EffectValue;
                 _effectText.color = Color.green;
                 break;
             case SkillEffectType.IncreaseDefense:
-                _effectText.text =  "Deffense Boost" + effect.EffectValue;
+                _effectText.text =  "Deffense Boost " + effect.EffectValue;
                 _effectText.color = Color.green;
                 break;
             case SkillEffectType.DecreaseOpponentAttack:
-                _effectText.text = "Attack Reduction" + - effect.EffectValue;
+                _effectText.text = "Attack Reduction " + - effect.EffectValue;
                 _effectText.color = Color.red;
                 break;
             case SkillEffectType.DecreaseOpponentDefense:
-                _effectText.text = "Deffense Reduction" + -effect.EffectValue;
+                _effectText.text = "Deffense Reduction " + -effect.EffectValue;
                 _effectText.color = Color.red;
                 break;
         }
