@@ -78,7 +78,7 @@ public class CardLayoutCreator : MonoBehaviour
       
       if (!_selectedCards.Contains(card))
       {  
-         if (_selectedCards.Count >= 6)
+         if (_selectedCards.Count >= _selectionCount)
          {
             return;
          }
@@ -124,7 +124,7 @@ public class CardLayoutCreator : MonoBehaviour
    }
    private bool CheckIfCardSelectionDone()
    {
-      if (_selectedCards.Count == _cardLayoutSettings.SelectionSize)
+      if (_selectedCards.Count == _selectionCount)
       {
          return true;
       }
@@ -140,9 +140,8 @@ public class CardLayoutCreator : MonoBehaviour
 
       var slotTransforms = new List<Transform>();
       var cardTransforms = new List<Transform>();
-      var selectionCount = _selectionCount;
-      if (_cardsHolderSo.Cards.Length < selectionCount) selectionCount = _cardsHolderSo.Cards.Length;
-      for (var i = 0; i < selectionCount; i++)
+      if (_cardsHolderSo.Cards.Length < _selectionCount) _selectionCount = _cardsHolderSo.Cards.Length;
+      for (var i = 0; i < _selectionCount; i++)
       {
          var slot = CreateSlotAtPos(Vector3.zero, _slotHolderTr);
          slotTransforms.Add(slot.transform);
@@ -156,11 +155,13 @@ public class CardLayoutCreator : MonoBehaviour
       slotTransforms = new List<Transform>();
       for (var j = 0; j<_cardsHolderSo.Cards.Length ; j++ )
       {
-         var display = _poolController.GetFromPool(PoolType.CardDisplay , _cardsHolderTr).PoolObj.GetComponent<CardDisplay>();
-         cardTransforms.Add(display.transform);
+         var display = _poolController.GetFromPool(PoolType.CardDisplay , _cardsHolderTr).PoolObj.GetComponent<ICard>();
+         cardTransforms.Add(display.CardTr);
          var slot = CreateSlotAtPos(Vector3.zero, _cardsHolderTr);
+         _slotDic.Add(display ,slot);
          slotTransforms.Add(slot.transform);
-         display.transform.position = slot.SlotPlacePoint.position;
+         slot.SetCardStats(SlotStats.Ocupied);
+         display.CardTr.position = slot.SlotPlacePoint.position;
          var cardData = _cardsHolderSo.Cards[j];
          var card = new Card(cardData.CardName, cardData.Attack, cardData.Defense);
          display.Initialize(cardData.CardImage ,card);
