@@ -1049,6 +1049,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: InputHandler
       objectReference: {fileID: 0}
+    - target: {fileID: 5283157478087806636, guid: c0ec86dde78974756bb4d89bc9039f18, type: 3}
+      propertyPath: _cardLayerMask.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
     - target: {fileID: 7683486680726975472, guid: c0ec86dde78974756bb4d89bc9039f18, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1506,6 +1510,14 @@ PrefabInstance:
     - target: {fileID: 7630547495734870743, guid: 88c382ad7f7eb44b49d930ad819e34cc, type: 3}
       propertyPath: m_Name
       value: GameDisplay
+      objectReference: {fileID: 0}
+    - target: {fileID: 8737689178155375141, guid: 88c382ad7f7eb44b49d930ad819e34cc, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 271.2333
+      objectReference: {fileID: 0}
+    - target: {fileID: 8737689178155375141, guid: 88c382ad7f7eb44b49d930ad819e34cc, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 389.38336
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
